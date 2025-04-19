@@ -7,6 +7,7 @@ interface InputProps {
   label: string;
   type?: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 const Input: React.FC<InputProps> = ({ name, label, type = 'text', placeholder }) => {

@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import SignaturePad from 'react-signature-canvas';
+import Button from '../common/Button';
 
 interface SignatureCanvasProps {
   name: string;

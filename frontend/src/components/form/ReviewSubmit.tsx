@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import Button from '../common/Button';
 import Checkbox from '../common/Checkbox';
 import Modal from '../ui/Modal';
@@ -10,16 +11,20 @@ import { FormData } from '../../types/form';
 
 const ReviewSubmit: React.FC = () => {
   const { t } = useTranslation();
-  const { handleSubmit, formState: { errors, isValid } } = useFormContext();
+  const { handleSubmit, formState: { errors, isValid }, watch } = useFormContext<FormData>();
   const [previewOpen, setPreviewOpen] = useState(false);
-  const generatePDF = usePDFGenerator();
+  const { generatePDF, shareViaWhatsApp } = usePDFGenerator();
 
   const onSubmit = async (data: FormData) => {
     const pdfBlob = await generatePDF(data);
+    if (!pdfBlob) {
+      toast.error(t('form.pdfError'));
+      return;
+    }
     const url = URL.createObjectURL(pdfBlob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `MountMeruSoyCo_${data.clientInfo.customerId}.pdf`;
+    a.download = `MountMeruSoyCo_${(data.clientInfo as any).customerId || 'unknown'}.pdf`;
     a.click();
     URL.revokeObjectURL(url);
     // Redirect to /success
@@ -62,6 +67,7 @@ const ReviewSubmit: React.FC = () => {
         </Button>
       </div>
       <Modal isOpen={previewOpen} onClose={() => setPreviewOpen(false)} title={t('form.previewPDF')}>
+        <div>{t('form.previewContent')}</div>
         {/* PDF preview logic */}
       </Modal>
     </div>

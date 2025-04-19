@@ -27,14 +27,21 @@ const DraftManager: React.FC = () => {
   };
 
   return (
-    <div className="flex gap-4">
-      <Button onClick={handleInitialize}>
+    <div className="flex gap-4 flex-wrap">
+      <Button onClick={handleInitialize} variant="primary">
         {t('form.initializeDraft')}
       </Button>
+
       <Button onClick={handleViewDraft} variant="secondary">
         {t('form.viewDraft')}
       </Button>
-      <Button onClick={handleReset} variant="danger" icon={Trash2}>
+
+      <Button 
+        onClick={handleReset} 
+        variant="danger"
+        icon={Trash2}
+        iconPosition="left"
+      >
         {t('form.clearForm')}
       </Button>
     </div>
