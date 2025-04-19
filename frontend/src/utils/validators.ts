@@ -1,0 +1,71 @@
+import { z } from 'zod';
+
+export const formSchema = z.object({
+  clientInfo: z.object({
+    fullName: z.string().min(3, 'Full name must be at least 3 characters'),
+    phoneNumber: z.string().regex(/^\+?\d{10,}$/, 'Invalid phone number'),
+    email: z.string().email().optional(),
+    gender: z.enum(['Male', 'Female', 'Other', 'Prefer not to say']).optional(),
+    address: z.string().min(10, 'Address must be at least 10 characters'),
+    clientCategory: z.enum(['Farmer', 'Distributor', 'Retailer', 'Partner', 'Individual Buyer']),
+    dateOfRegistration: z.string(),
+    referredBy: z.string().optional(),
+    preferredContactMethod: z.enum(['SMS', 'Call', 'Email']),
+    businessName: z.string().min(3).optional(),
+    taxId: z.string().regex(/^[A-Za-z0-9-]{0,20}$/).optional(),
+    loyaltyProgram: z.boolean().optional(),
+    clientTier: z.enum(['Standard', 'Premium', 'Enterprise']),
+    accountManager: z.string().min(3).optional(),
+    clientPhoto: z.any().optional(),
+  }),
+  orderDetails: z.array(
+    z.object({
+      orderCategory: z.enum(['Retail', 'Wholesale', 'Export', 'Internal Use']),
+      productName: z.enum(['Soy Oil', 'Sunflower Oil', 'Soy Flour', 'Soy Seeds']),
+      sku: z.string().regex(/^[A-Za-z0-9-]{3,}$/),
+      unitType: z.enum(['Liters', 'Kilograms', 'Bottles', 'Bags']),
+      quantity: z.number().min(1),
+      unitPrice: z.number().min(0.01),
+      discount: z.number().min(0).max(100).optional(),
+      notes: z.string().max(500).optional(),
+      orderUrgency: z.enum(['Standard', 'Expedited', 'Critical']),
+      packagingPreference: z.enum(['Standard', 'Eco-Friendly', 'Custom']).optional(),
+      paymentSchedule: z.enum(['Full Payment', '30% Deposit', 'Installments']).optional(),
+    })
+  ),
+  dispatch: z.array(
+    z.object({
+      dispatchDate: z.string(),
+      product: z.string(),
+      quantityDispatched: z.number().min(1),
+      transportMethod: z.enum(['Truck', 'Motorcycle', 'On Foot', 'Third-Party Courier']),
+      trackingReference: z.string().optional(),
+      dispatchNotes: z.string().max(500).optional(),
+      driverContact: z.string().regex(/^\+?\d{10,}$/).optional(),
+      warehouseLocation: z.enum(['Kigali', 'Kayonza', 'Musanze']).optional(),
+      dispatchStatus: z.enum(['Scheduled', 'In Transit', 'Delivered', 'Delayed']),
+      blockchainHash: z.string().optional(),
+    })
+  ),
+  salesOps: z.object({
+    salesRepresentative: z.string().nonempty(),
+    paymentStatus: z.enum(['Pending', 'Partial', 'Paid']),
+    paymentMethod: z.enum(['Cash on Delivery', 'M-Pesa', 'Bank Transfer', 'Credit']).optional(),
+    paymentReceived: z.number().min(0).optional(),
+    deliveryStatus: z.enum(['Processing', 'Dispatched', 'Delivered', 'Cancelled']),
+    preferredDeliveryDate: z.string().optional(),
+    internalComments: z.string().max(1000).optional(),
+    orderPriority: z.enum(['Low', 'Medium', 'High']),
+    salesChannel: z.enum(['Online', 'Phone', 'In-Person', 'Agent']),
+    crmSync: z.boolean().optional(),
+    invoiceNumber: z.string().optional(),
+    paymentReceipt: z.any().optional(),
+  }),
+  compliance: z.object({
+    exportLicense: z.string().optional(),
+    qualityCertification: z.enum(['ISO 22000', 'HACCP', 'Organic', 'None']).optional(),
+    customsDeclaration: z.string().max(500).optional(),
+    complianceNotes: z.string().max(500).optional(),
+    digitalSignature: z.string().nonempty(),
+  }),
+});
