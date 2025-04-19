@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 
 const items = [
-  { id: 1, image: '/assets/images/soy-oil.jpg', title: 'Soy Oil', description: 'carousel.soyOil' },
-  // Add more items
+  { id: 1, image: '/assets/images/groundnut-oil.jpg', title: 'Groundnut Oil', description: 'High quality groundnut oil', discount: '10% off' },
+  { id: 2, image: '/assets/images/gas.jpg', title: 'Gas', description: 'Reliable and safe gas supply', discount: '15% off' },
+  { id: 3, image: '/assets/images/soap.jpg', title: 'Soap', description: 'Natural and fragrant soap', discount: '20% off' },
+  { id: 4, image: '/assets/images/chippy.jpg', title: 'Chippy', description: 'Delicious and crispy chippy', discount: '5% off' },
 ];
 
 const Carousel: React.FC = () => {
