@@ -1,1 +1,16 @@
-/* css styles  */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-secondary-100; /* Use defined color variant */
+    @apply font-sans text-gray-800;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Keep other base styles the same */
+}
+
+/* Rest of your CSS remains unchanged */
