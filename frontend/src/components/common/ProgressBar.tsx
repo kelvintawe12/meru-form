@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { FormData } from '../types/form';
+import { FormData } from '../../types/form';
 
 const ProgressBar: React.FC = () => {
   const { t } = useTranslation();

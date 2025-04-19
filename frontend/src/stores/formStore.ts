@@ -5,6 +5,8 @@ import { FormData } from '../types/form';
 interface FormState {
   formData: FormData;
   history: FormData[];
+  setDraft: (data: FormData) => void;
+  loadDraft: () => FormData;
   updateDraft: (data: Partial<FormData>) => void;
   clearDraft: () => void;
   clearSection: (section: keyof FormData) => void;
@@ -83,6 +85,12 @@ export const useFormStore = create<FormState>()(
     (set, get) => ({
       formData: initialFormData,
       history: [],
+      setDraft: (data) =>
+        set(() => ({
+          formData: data,
+          history: [...get().history, get().formData],
+        })),
+      loadDraft: () => get().formData,
       updateDraft: (data) =>
         set((state) => ({
           formData: { ...state.formData, ...data },

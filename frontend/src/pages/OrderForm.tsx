@@ -13,7 +13,7 @@ import Dispatch from '../components/form/Dispatch';
 import SalesOps from '../components/form/SalesOps';
 import Compliance from '../components/form/Compliance';
 import ReviewSubmit from '../components/form/ReviewSubmit';
-import Sidebar from '../components/layout/Sidebar';
+import Sidebar from '../components/Layout/Sidebar';
 import Modal from '../components/ui/Modal';
 import Button from '../components/common/Button';
 import { FormData } from '../types/form';
