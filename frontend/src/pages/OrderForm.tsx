@@ -1,172 +1,274 @@
-import { useCallback } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { FormProvider, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import ClientInfo from '../components/form/ClientInfo';
+import OrderDetails from '../components/form/OrderDetails';
+import Compliance from '../components/form/Compliance';
+import SalesOps from '../components/form/SalesOps';
+import ReviewSubmit from '../components/form/ReviewSubmit';
+import Button from '../components/common/Button';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import Input from '../components/common/Input';
+import Select from '../components/common/Select';
+import { Trash2 } from 'lucide-react';
 import { FormData } from '../types/form';
 
-export const usePDFGenerator = () => {
+// Dispatch component for dispatch section
+const Dispatch: React.FC = () => {
   const { t } = useTranslation();
+  const { control } = useFormContext<FormData>();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'dispatch',
+  });
 
-  const generatePDF = useCallback(
-    (formData: FormData, fileName: string = 'order_summary.pdf') => {
-      try {
-        const doc = new jsPDF();
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
-
-        // Add MMS text logo
-        doc.setFontSize(24);
-        doc.setFont('helvetica', 'bold');
-        const logoText = 'MMS';
-        const textWidth = doc.getTextWidth(logoText);
-        const logoX = (pageWidth - textWidth) / 2;
-        doc.text(logoText, logoX, 20);
-        const logoHeight = 20; // Approximate height for spacing
-
-        // Title (centered)
-        doc.setFontSize(18);
-        const title = t('form.title');
-        const titleWidth = doc.getTextWidth(title);
-        doc.text(title, (pageWidth - titleWidth) / 2, logoHeight + 20);
-
-        // Client Info Table
-        autoTable(doc, {
-          startY: logoHeight + 40,
-          head: [[t('form.clientInfo')]],
-          body: [
-            [t('form.fullName'), formData.clientInfo.fullName],
-            [t('form.phoneNumber'), formData.clientInfo.phoneNumber],
-            [t('form.email'), formData.clientInfo.email || '-'],
-            [t('form.address'), formData.clientInfo.address],
-            [t('form.clientCategory'), t(`options.${formData.clientInfo.clientCategory}`)],
-            [t('form.dateOfRegistration'), formData.clientInfo.dateOfRegistration],
-            [t('form.preferredContactMethod'), t(`options.${formData.clientInfo.preferredContactMethod}`)],
-            [t('form.clientTier'), t(`options.${formData.clientInfo.clientTier}`)],
-          ],
-          theme: 'striped',
-          headStyles: { fillColor: [0, 105, 92] },
-        });
-
-        // Order Details Table
-        autoTable(doc, {
-          startY: (doc as any).lastAutoTable.finalY + 10,
-          head: [[t('form.orderDetails')]],
-          body: formData.orderDetails.map((order, index) => [
-            index + 1,
-            t(`options.${order.productName}`),
-            order.sku,
-            t(`options.${order.unitType}`),
-            order.quantity,
-            order.unitPrice,
-            order.discount || 0,
-            t(`options.${order.orderUrgency}`),
-          ]),
-          columns: [
-            { header: '#', dataKey: 'index' },
-            { header: t('form.productName'), dataKey: 'productName' },
-            { header: t('form.sku'), dataKey: 'sku' },
-            { header: t('form.unitType'), dataKey: 'unitType' },
-            { header: t('form.quantity'), dataKey: 'quantity' },
-            { header: t('form.unitPrice'), dataKey: 'unitPrice' },
-            { header: t('form.discount'), dataKey: 'discount' },
-            { header: t('form.orderUrgency'), dataKey: 'orderUrgency' },
-          ],
-          theme: 'striped',
-          headStyles: { fillColor: [0, 105, 92] },
-        });
-
-        // Dispatch Table
-        autoTable(doc, {
-          startY: (doc as any).lastAutoTable.finalY + 10,
-          head: [[t('form.dispatch')]],
-          body: formData.dispatch.map((dispatch, index) => [
-            index + 1,
-            dispatch.dispatchDate,
-            dispatch.product,
-            dispatch.quantityDispatched,
-            t(`options.${dispatch.transportMethod}`),
-            dispatch.trackingReference || '-',
-            t(`options.${dispatch.dispatchStatus}`),
-          ]),
-          columns: [
-            { header: '#', dataKey: 'index' },
-            { header: t('form.dispatchDate'), dataKey: 'dispatchDate' },
-            { header: t('form.product'), dataKey: 'product' },
-            { header: t('form.quantityDispatched'), dataKey: 'quantityDispatched' },
-            { header: t('form.transportMethod'), dataKey: 'transportMethod' },
-            { header: t('form.trackingReference'), dataKey: 'trackingReference' },
-            { header: t('form.dispatchStatus'), dataKey: 'dispatchStatus' },
-          ],
-          theme: 'striped',
-          headStyles: { fillColor: [0, 105, 92] },
-        });
-
-        // Sales & Operations Table
-        autoTable(doc, {
-          startY: (doc as any).lastAutoTable.finalY + 10,
-          head: [[t('form.salesOps')]],
-          body: [
-            [t('form.salesRepresentative'), formData.salesOps.salesRepresentative || '-'],
-            [t('form.paymentStatus'), t(`options.${formData.salesOps.paymentStatus}`)],
-            [t('form.deliveryStatus'), t(`options.${formData.salesOps.deliveryStatus}`)],
-            [t('form.orderPriority'), t(`options.${formData.salesOps.orderPriority}`)],
-            [t('form.salesChannel'), t(`options.${formData.salesOps.salesChannel}`)],
-          ],
-          theme: 'striped',
-          headStyles: { fillColor: [0, 105, 92] },
-        });
-
-        // Compliance Table
-        autoTable(doc, {
-          startY: (doc as any).lastAutoTable.finalY + 10,
-          head: [[t('form.compliance')]],
-          body: [
-            [t('form.digitalSignature'), formData.compliance.digitalSignature],
-            [t('form.qualityCertification'), t(`options.${formData.compliance.qualityCertification || 'None'}`)],
-          ],
-          theme: 'striped',
-          headStyles: { fillColor: [0, 105, 92] },
-        });
-
-        // Footer
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        const footerText = `Mount Meru SoyCo Rwanda - ${new Date().toLocaleDateString()}`;
-        const footerWidth = doc.getTextWidth(footerText);
-        doc.text(footerText, (pageWidth - footerWidth) / 2, pageHeight - 10);
-
-        // Save PDF and return blob
-        const pdfBlob = doc.output('blob');
-        doc.save(fileName);
-        toast.success(t('form.pdfGenerated'));
-        return pdfBlob;
-      } catch (error) {
-        toast.error(t('form.pdfError'));
-        console.error('PDF generation error:', error);
-        return null;
-      }
-    },
-    [t],
+  return (
+    <div>
+      {fields.map((field, index) => (
+        <div key={field.id} className="border p-4 mb-4 rounded-lg relative">
+          <Button
+            variant="danger"
+            onClick={() => remove(index)}
+            className="absolute top-2 right-2"
+          >
+            <Trash2 size={16} />
+          </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input name={`dispatch.${index}.dispatchDate`} label="form.dispatchDate" type="date" />
+            <Input name={`dispatch.${index}.product`} label="form.product" />
+            <Input name={`dispatch.${index}.quantityDispatched`} label="form.quantityDispatched" type="number" />
+            <Select
+              name={`dispatch.${index}.transportMethod`}
+              label="form.transportMethod"
+              options={['Truck', 'Motorcycle', 'On Foot', 'Third-Party Courier']}
+            />
+            <Input name={`dispatch.${index}.trackingReference`} label="form.trackingReference" />
+            <Input name={`dispatch.${index}.dispatchNotes`} label="form.dispatchNotes" />
+            <Input name={`dispatch.${index}.driverContact`} label="form.driverContact" />
+            <Select
+              name={`dispatch.${index}.warehouseLocation`}
+              label="form.warehouseLocation"
+              options={['Kigali', 'Kayonza', 'Musanze']}
+            />
+            <Select
+              name={`dispatch.${index}.dispatchStatus`}
+              label="form.dispatchStatus"
+              options={['Scheduled', 'In Transit', 'Delivered', 'Delayed']}
+            />
+            <Input name={`dispatch.${index}.blockchainHash`} label="form.blockchainHash" />
+          </div>
+        </div>
+      ))}
+      <Button
+        variant="primary"
+        onClick={() =>
+          append({
+            dispatchDate: '',
+            product: '',
+            quantityDispatched: 1,
+            transportMethod: 'Truck',
+            trackingReference: '',
+            dispatchNotes: '',
+            driverContact: '',
+            warehouseLocation: undefined,
+            dispatchStatus: 'Scheduled',
+            blockchainHash: '',
+          })
+        }
+      >
+        {t('form.addDispatch')}
+      </Button>
+    </div>
   );
-
-  const shareViaWhatsApp = useCallback(
-    (pdfBlob: Blob, phoneNumber: string, message: string = t('form.whatsappMessage')) => {
-      try {
-        const url = URL.createObjectURL(pdfBlob);
-        const encodedMessage = encodeURIComponent(`${message} ${url}`);
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-        window.open(whatsappUrl, '_blank');
-        toast.success(t('form.whatsappShared'));
-      } catch (error) {
-        toast.error(t('form.whatsappError'));
-        console.error('WhatsApp sharing error:', error);
-      }
-    },
-    [t],
-  );
-
-  return { generatePDF, shareViaWhatsApp };
 };
 
-export default usePDFGenerator;
+// Zod schema for form validation
+const formSchema = z.object({
+  clientInfo: z.object({
+    fullName: z.string().min(1, 'form.fullNameRequired'),
+    phoneNumber: z.string().min(1, 'form.phoneNumberRequired'),
+    email: z.string().email('form.emailInvalid').optional().or(z.literal('')),
+    gender: z.enum(['Male', 'Female', 'Other', 'Prefer not to say']).optional(),
+    address: z.string().min(1, 'form.addressRequired'),
+    clientCategory: z.enum(['Farmer', 'Distributor', 'Retailer', 'Partner', 'Individual Buyer']),
+    dateOfRegistration: z.string().min(1, 'form.dateOfRegistrationRequired'),
+    referredBy: z.string().optional(),
+    preferredContactMethod: z.enum(['SMS', 'Call', 'Email']),
+    businessName: z.string().optional(),
+    taxId: z.string().optional(),
+    loyaltyProgram: z.boolean().optional(),
+    clientTier: z.enum(['Standard', 'Premium', 'Enterprise']),
+    accountManager: z.string().optional(),
+    clientPhoto: z.any().optional(),
+  }),
+  orderDetails: z
+    .array(
+      z.object({
+        orderCategory: z.enum(['Retail', 'Wholesale', 'Export', 'Internal Use']),
+        productName: z.enum(['Soy Oil', 'Sunflower Oil', 'Soy Flour', 'Soy Seeds']),
+        sku: z.string().min(1, 'form.skuRequired'),
+        unitType: z.enum(['Liters', 'Kilograms', 'Bottles', 'Bags']),
+        quantity: z.number().min(1, 'form.quantityRequired'),
+        unitPrice: z.number().min(0, 'form.unitPriceRequired'),
+        discount: z.number().min(0).max(100).optional(),
+        notes: z.string().optional(),
+        orderUrgency: z.enum(['Standard', 'Expedited', 'Critical']),
+        packagingPreference: z.enum(['Standard', 'Eco-Friendly', 'Custom']).optional(),
+        paymentSchedule: z.enum(['Full Payment', '30% Deposit', 'Installments']).optional(),
+      })
+    )
+    .min(1, 'form.orderDetailsRequired'),
+  dispatch: z
+    .array(
+      z.object({
+        dispatchDate: z.string().min(1, 'form.dispatchDateRequired'),
+        product: z.string().min(1, 'form.productRequired'),
+        quantityDispatched: z.number().min(1, 'form.quantityDispatchedRequired'),
+        transportMethod: z.enum(['Truck', 'Motorcycle', 'On Foot', 'Third-Party Courier']),
+        trackingReference: z.string().optional(),
+        dispatchNotes: z.string().optional(),
+        driverContact: z.string().optional(),
+        warehouseLocation: z.enum(['Kigali', 'Kayonza', 'Musanze']).optional(),
+        dispatchStatus: z.enum(['Scheduled', 'In Transit', 'Delivered', 'Delayed']),
+        blockchainHash: z.string().optional(),
+      })
+    )
+    .optional(),
+  salesOps: z.object({
+    salesRepresentative: z.string().optional(),
+    paymentStatus: z.enum(['Pending', 'Partial', 'Paid']),
+    paymentMethod: z.enum(['Cash on Delivery', 'M-Pesa', 'Bank Transfer', 'Credit']).optional(),
+    paymentReceived: z.number().optional(),
+    paymentReceipt: z.any().optional(),
+    deliveryStatus: z.enum(['Processing', 'Dispatched', 'Delivered', 'Cancelled']),
+    preferredDeliveryDate: z.string().optional(),
+    internalComments: z.string().optional(),
+    orderPriority: z.enum(['Low', 'Medium', 'High']),
+    salesChannel: z.enum(['Online', 'Phone', 'In-Person', 'Agent']),
+    crmSync: z.boolean().optional(),
+    invoiceNumber: z.string().optional(),
+  }),
+  compliance: z.object({
+    exportLicense: z.string().optional(),
+    qualityCertification: z.enum(['ISO 22000', 'HACCP', 'Organic', 'None']).optional(),
+    customsDeclaration: z.string().optional(),
+    complianceNotes: z.string().optional(),
+    digitalSignature: z.string().min(1, 'form.digitalSignatureRequired'),
+  }),
+  confirmation: z.boolean().refine((val) => val === true, { message: 'form.confirmationRequired' }),
+  emailPDF: z.boolean().optional(),
+  shareWithManager: z.boolean().optional(),
+});
+
+const OrderForm: React.FC = () => {
+  const { t } = useTranslation();
+
+  const methods = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      clientInfo: {
+        fullName: '',
+        phoneNumber: '',
+        email: '',
+        gender: undefined,
+        address: '',
+        clientCategory: 'Farmer',
+        dateOfRegistration: new Date().toISOString().split('T')[0],
+        referredBy: '',
+        preferredContactMethod: 'SMS',
+        businessName: '',
+        taxId: '',
+        loyaltyProgram: false,
+        clientTier: 'Standard',
+        accountManager: '',
+        clientPhoto: null,
+      },
+      orderDetails: [
+        {
+          orderCategory: 'Retail',
+          productName: 'Soy Oil',
+          sku: `SOY-${Math.random().toString(36).slice(2, 7)}`,
+          unitType: 'Liters',
+          quantity: 1,
+          unitPrice: 0,
+          discount: 0,
+          notes: '',
+          orderUrgency: 'Standard',
+          packagingPreference: undefined,
+          paymentSchedule: undefined,
+        },
+      ],
+      dispatch: [],
+      salesOps: {
+        salesRepresentative: '',
+        paymentStatus: 'Pending',
+        paymentMethod: undefined,
+        paymentReceived: 0,
+        paymentReceipt: null,
+        deliveryStatus: 'Processing',
+        preferredDeliveryDate: '',
+        internalComments: '',
+        orderPriority: 'Low',
+        salesChannel: 'Online',
+        crmSync: false,
+        invoiceNumber: '',
+      },
+      compliance: {
+        exportLicense: '',
+        qualityCertification: undefined,
+        customsDeclaration: '',
+        complianceNotes: '',
+        digitalSignature: '',
+      },
+      confirmation: false,
+      emailPDF: false,
+      shareWithManager: false,
+    },
+  });
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-4">{t('form.title')}</h1>
+      <FormProvider {...methods}>
+        <form className="space-y-8">
+          <section>
+            <h2 className="text-xl font-semibold mb-4">{t('form.clientInfo')}</h2>
+            <ClientInfo />
+          </section>
+          <section>
+            <h2 className="text-xl font-semibold mb-4">{t('form.orderDetails')}</h2>
+            <OrderDetails />
+          </section>
+          <section>
+            <h2 className="text-xl font-semibold mb-4">{t('form.dispatch')}</h2>
+            <Dispatch />
+          </section>
+          <section>
+            <h2 className="text-xl font-semibold mb-4">{t('form.salesOps')}</h2>
+            <SalesOps />
+          </section>
+          <section>
+            <h2 className="text-xl font-semibold mb-4">{t('form.compliance')}</h2>
+            <Compliance />
+          </section>
+          <section>
+            <h2 className="text-xl font-semibold mb-4">{t('form.reviewSubmit')}</h2>
+            <ReviewSubmit />
+          </section>
+          <div className="flex justify-end gap-4">
+            <Button
+              variant="secondary"
+              onClick={() => methods.reset()}
+            >
+              {t('form.reset')}
+            </Button>
+          </div>
+        </form>
+      </FormProvider>
+    </div>
+  );
+};
+
+export default OrderForm;

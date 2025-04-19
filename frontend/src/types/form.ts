@@ -72,4 +72,7 @@ export interface ClientInfo {
     dispatch: DispatchEntry[];
     salesOps: SalesOps;
     compliance: Compliance;
+    confirmation: boolean;
+    emailPDF?: boolean;
+    shareWithManager?: boolean;
   }

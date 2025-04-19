@@ -12,6 +12,21 @@ import Help from './pages/Help';
 import Profile from './pages/Profile';
 import { useLanguage } from './contexts/LanguageContext';
 
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <h1>Something went wrong. Please try again.</h1>;
+    }
+    return this.props.children;
+  }
+}
+
 const App: React.FC = () => {
   const { t } = useTranslation();
   const { language } = useLanguage();
@@ -22,13 +37,15 @@ const App: React.FC = () => {
       <Hero title={t('hero.title')} subtitle={t('hero.subtitle')} cta={t('hero.cta')} />
       <main className="flex flex-1 container mx-auto px-4 py-8">
         <div className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/order" element={<OrderForm />} />
-            <Route path="/portal" element={<ClientPortal />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/order" element={<OrderForm />} />
+              <Route path="/portal" element={<ClientPortal />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </ErrorBoundary>
         </div>
         <Sidebar />
       </main>

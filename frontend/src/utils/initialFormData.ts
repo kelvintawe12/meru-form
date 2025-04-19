@@ -67,4 +67,5 @@ clientInfo: {
     complianceNotes: '',
     digitalSignature: '',
   },
+  confirmation: false,
 };

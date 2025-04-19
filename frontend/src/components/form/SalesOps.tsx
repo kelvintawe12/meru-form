@@ -7,10 +7,11 @@ import Textarea from '../common/Textarea';
 import DatePicker from '../common/DatePicker';
 import Checkbox from '../common/Checkbox';
 import FileInput from '../common/FileInput';
+import { FormData } from '../../types/form';
 
 const SalesOps: React.FC = () => {
   const { t } = useTranslation();
-  const { watch } = useFormContext();
+  const { watch } = useFormContext<FormData>();
   const paymentStatus = watch('salesOps.paymentStatus');
 
   return (

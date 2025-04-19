@@ -4,7 +4,9 @@ import { toast } from 'react-toastify';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { FormData } from '../types/form';
-const logo = 'MMS';
+
+// Update to use a valid image path (e.g., in public or src/assets)
+const logo = '/logo.png'; // Ensure this file exists in public/ or adjust path
 
 export const usePDFGenerator = () => {
   const { t } = useTranslation();
@@ -13,34 +15,33 @@ export const usePDFGenerator = () => {
     (formData: FormData, fileName: string = 'order_summary.pdf') => {
       try {
         const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
 
-        // Attempt to add logo
+        // Add logo (fallback to text if image fails)
         try {
-          const img = new Image();
-          img.src = logo;
-          img.onload = () => {
-            const imgWidth = 30;
-            const imgHeight = (img.height * imgWidth) / img.width; // Maintain aspect ratio
-            doc.addImage(logo, 'PNG', 10, 10, imgWidth, imgHeight);
-          };
-          img.onerror = () => {
-            throw new Error('Failed to load logo image');
-          };
+          doc.addImage(logo, 'PNG', 10, 10, 30, 30); // Adjust dimensions as needed
         } catch (imgError) {
           console.warn('Logo loading failed:', imgError);
           toast.warn(t('form.pdfImageWarning'));
-          // Proceed without logo
-          doc.setFontSize(18);
-          doc.text(t('form.title'), 10, 20);
+          // Fallback to text logo
+          doc.setFontSize(24);
+          doc.setFont('helvetica', 'bold');
+          const logoText = 'MMS';
+          const textWidth = doc.getTextWidth(logoText);
+          const logoX = (pageWidth - textWidth) / 2;
+          doc.text(logoText, logoX, 20);
         }
 
-        // Title (adjusted if logo is present)
+        // Title (centered)
         doc.setFontSize(18);
-        doc.text(t('form.title'), 50, logo ? 40 : 20);
+        const title = t('form.title');
+        const titleWidth = doc.getTextWidth(title);
+        doc.text(title, (pageWidth - titleWidth) / 2, 40);
 
         // Client Info Table
         autoTable(doc, {
-          startY: logo ? 60 : 40,
+          startY: 60,
           head: [[t('form.clientInfo')]],
           body: [
             [t('form.fullName'), formData.clientInfo.fullName],
@@ -53,7 +54,7 @@ export const usePDFGenerator = () => {
             [t('form.clientTier'), t(`options.${formData.clientInfo.clientTier}`)],
           ],
           theme: 'striped',
-          headStyles: { fillColor: [0, 105, 92] }, // Teal
+          headStyles: { fillColor: [0, 105, 92] },
         });
 
         // Order Details Table
@@ -137,6 +138,13 @@ export const usePDFGenerator = () => {
           headStyles: { fillColor: [0, 105, 92] },
         });
 
+        // Footer
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        const footerText = `Mount Meru SoyCo Rwanda - ${new Date().toLocaleDateString()}`;
+        const footerWidth = doc.getTextWidth(footerText);
+        doc.text(footerText, (pageWidth - footerWidth) / 2, pageHeight - 10);
+
         // Save PDF and return blob
         const pdfBlob = doc.output('blob');
         doc.save(fileName);
@@ -148,21 +156,26 @@ export const usePDFGenerator = () => {
         return null;
       }
     },
-    [t],
+    [t]
   );
 
-  const shareViaWhatsApp = useCallback((pdfBlob: Blob, phoneNumber: string, message: string = t('form.whatsappMessage')) => {
-    try {
-      const url = URL.createObjectURL(pdfBlob);
-      const encodedMessage = encodeURIComponent(`${message} ${url}`);
-      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-      window.open(whatsappUrl, '_blank');
-      toast.success(t('form.whatsappShared'));
-    } catch (error) {
-      toast.error(t('form.whatsappError'));
-      console.error('WhatsApp sharing error:', error);
-    }
-  }, [t]);
+  const shareViaWhatsApp = useCallback(
+    (pdfBlob: Blob, phoneNumber: string, message: string = t('form.whatsappMessage')) => {
+      try {
+        const url = URL.createObjectURL(pdfBlob);
+        const encodedMessage = encodeURIComponent(`${message} ${url}`);
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+        toast.success(t('form.whatsappShared'));
+      } catch (error) {
+        toast.error(t('form.whatsappError'));
+        console.error('WhatsApp sharing error:', error);
+      }
+    },
+    [t]
+  );
 
   return { generatePDF, shareViaWhatsApp };
 };
+
+export default usePDFGenerator;
