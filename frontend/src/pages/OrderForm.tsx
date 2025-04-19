@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { FormData } from '../types/form';
-import logo from '../../assets/images/meru-logo.png';
 
 export const usePDFGenerator = () => {
   const { t } = useTranslation();
@@ -16,34 +15,24 @@ export const usePDFGenerator = () => {
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
 
-        // Attempt to add logo
-        let logoHeight = 0;
-        try {
-          const img = new Image();
-          img.src = logo;
-          img.onload = () => {
-            const imgWidth = 50; // Larger logo for splash effect
-            logoHeight = (img.height * imgWidth) / img.width; // Maintain aspect ratio
-            const logoX = (pageWidth - imgWidth) / 2; // Center logo
-            doc.addImage(logo, 'PNG', logoX, 10, imgWidth, logoHeight);
-          };
-          img.onerror = () => {
-            throw new Error('Failed to load logo image');
-          };
-        } catch (imgError) {
-          console.warn('Logo loading failed:', imgError);
-          toast.warn(t('form.pdfImageWarning'));
-        }
+        // Add MMS text logo
+        doc.setFontSize(24);
+        doc.setFont('helvetica', 'bold');
+        const logoText = 'MMS';
+        const textWidth = doc.getTextWidth(logoText);
+        const logoX = (pageWidth - textWidth) / 2;
+        doc.text(logoText, logoX, 20);
+        const logoHeight = 20; // Approximate height for spacing
 
         // Title (centered)
         doc.setFontSize(18);
         const title = t('form.title');
         const titleWidth = doc.getTextWidth(title);
-        doc.text(title, (pageWidth - titleWidth) / 2, logoHeight ? logoHeight + 20 : 30);
+        doc.text(title, (pageWidth - titleWidth) / 2, logoHeight + 20);
 
         // Client Info Table
         autoTable(doc, {
-          startY: logoHeight ? logoHeight + 40 : 50,
+          startY: logoHeight + 40,
           head: [[t('form.clientInfo')]],
           body: [
             [t('form.fullName'), formData.clientInfo.fullName],
@@ -56,7 +45,7 @@ export const usePDFGenerator = () => {
             [t('form.clientTier'), t(`options.${formData.clientInfo.clientTier}`)],
           ],
           theme: 'striped',
-          headStyles: { fillColor: [0, 105, 92] }, // Teal
+          headStyles: { fillColor: [0, 105, 92] },
         });
 
         // Order Details Table
@@ -179,3 +168,5 @@ export const usePDFGenerator = () => {
 
   return { generatePDF, shareViaWhatsApp };
 };
+
+export default usePDFGenerator;
