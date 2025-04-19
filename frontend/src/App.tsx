@@ -30,7 +30,6 @@ const App: React.FC = () => {
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
-        <div className="test">Test </div>
         <Sidebar />
       </main>
       <Footer />
