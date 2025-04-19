@@ -7,6 +7,7 @@
       "profile": "Profile"
     },
     "form": {
+        
       "title": "Order Form",
       "clientInfo": "Client Information",
       "fullName": "Full Name",
@@ -97,7 +98,9 @@
       "clearSectionConfirm": "Are you sure you want to clear this section?",
       "cancel": "Cancel",
       "clear": "Clear",
-      "saved": "Form saved successfully"
+      "saved": "Form saved successfully",
+      "initializeDraft": "Initialize Draft",
+      "viewDraft": "View Draft"
     },
     "options": {
       "Male": "Male",

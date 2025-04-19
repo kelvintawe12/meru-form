@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import i18n from '';
+import i18n from '../utils/i18n';
 
 interface LanguageContextType {
   language: 'en' | 'rw';

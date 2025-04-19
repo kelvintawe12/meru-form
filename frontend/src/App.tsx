@@ -1,37 +1,39 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { LanguageProvider } from './contexts/LanguageContext';
-import { I18nextProvider } from 'react-i18next';
-import i18n from './i18n';
-import Home from './pages/Home';
+import { Routes, Route } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import Navbar from './components/common/Navbar';
+import Footer from './components/common/Footer';
+import Sidebar from './components/common/Sidebar';
+import Hero from './components/common/Hero';
 import OrderForm from './pages/OrderForm';
+import Home from './pages/Home';
 import ClientPortal from './pages/ClientPortal';
 import Help from './pages/Help';
-import Success from './pages/Success';
-import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer';
+import Profile from './pages/Profile';
+import { useLanguage } from './contexts/LanguageContext';
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
+
   return (
-    <I18nextProvider i18n={i18n}>
-      <LanguageProvider>
-        <BrowserRouter>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/order-form" element={<OrderForm />} />
-                <Route path="/client-portal" element={<ClientPortal />} />
-                <Route path="/help" element={<Help />} />
-                <Route path="/success" element={<Success />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-        </BrowserRouter>
-      </LanguageProvider>
-    </I18nextProvider>
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <Navbar />
+      <Hero title={t('hero.title')} subtitle={t('hero.subtitle')} cta={t('hero.cta')} />
+      <main className="flex flex-1 container mx-auto px-4 py-8">
+        <div className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/order" element={<OrderForm />} />
+            <Route path="/portal" element={<ClientPortal />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+        </div>
+        <Sidebar />
+      </main>
+      <Footer />
+    </div>
   );
 };
 

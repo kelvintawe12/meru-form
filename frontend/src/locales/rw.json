@@ -102,7 +102,9 @@
       "adminConfirmation": "Icyemezo cy’Umuyobozi",
       "adminApproval": "Kwemeza kw’Umuyobozi",
       "officialStamp": "Ikirango cy’Urwego",
-      "confirmationDate": "Itariki y’icyemezo"
+      "confirmationDate": "Itariki y’icyemezo",
+      "initializeDraft": "Tangiza Ifishi",
+      "viewDraft": "Reba Ifishi"
     },
     "options": {
       "Male": "Igitsina cy’Umugabo",
