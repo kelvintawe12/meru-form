@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import i18n from '../i18n';
 
 interface LanguageContextType {
   language: 'en' | 'rw';
@@ -8,9 +8,8 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<'en' | 'rw'>('en');
-  const { i18n } = useTranslation();
 
   const handleSetLanguage = (lang: 'en' | 'rw') => {
     setLanguage(lang);
@@ -26,6 +25,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
-  if (!context) throw new Error('useLanguage must be used within LanguageProvider');
+  if (!context) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
   return context;
 };
