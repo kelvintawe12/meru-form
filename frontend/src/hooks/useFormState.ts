@@ -1,7 +1,21 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { merge } from 'lodash';
+import { merge, set } from 'lodash';
 import { FormData } from '../types/form';
+import { initialFormData } from '../utils/initialFormData';
+
+// Utility type to generate valid dot-separated paths for FormData
+type Path<T> = T extends object
+  ? {
+      [K in keyof T]: K extends string
+        ? T[K] extends object
+          ? `${K}.${Path<T[K]>}`
+          : K
+        : never;
+    }[keyof T]
+  : never;
+
+type FormDataPath = Path<FormData> | keyof FormData;
 
 interface FormState {
   formData: FormData;
@@ -13,7 +27,7 @@ interface FormState {
   updateDraft: (data: Partial<FormData>) => void;
   clearDraft: () => void;
   clearSection: <K extends keyof FormData>(section: K) => void;
-  resetField: <K extends keyof FormData>(path: `${K}.${keyof FormData[K]}`) => void;
+  resetField: (path: FormDataPath) => void;
   addAttachment: (file: File) => void;
   removeAttachment: (index: number) => void;
   setStatus: (status: FormData['status']) => void;
@@ -22,80 +36,6 @@ interface FormState {
   setError: (error: string | null) => void;
   saveDraftAsync: (data: FormData) => Promise<void>;
 }
-
-const initialFormData: FormData = {
-  clientInfo: {
-    fullName: '',
-    phoneNumber: '',
-    email: '',
-    gender: undefined,
-    address: '',
-    clientCategory: 'Farmer',
-    dateOfRegistration: new Date().toISOString().split('T')[0],
-    referredBy: '',
-    preferredContactMethod: 'SMS',
-    businessName: '',
-    taxId: '',
-    loyaltyProgram: false,
-    clientTier: 'Standard',
-    accountManager: '',
-    clientPhoto: null,
-  },
-  orderDetails: [
-    {
-      orderCategory: 'Retail',
-      productName: 'Soy Oil',
-      sku: `SOY-${Math.random().toString(36).slice(2, 7)}`,
-      unitType: 'Liters',
-      quantity: 1,
-      unitPrice: 0,
-      discount: 0,
-      notes: '',
-      orderUrgency: 'Standard',
-      packagingPreference: undefined,
-      paymentSchedule: undefined,
-    },
-  ],
-  dispatch: [],
-  salesOps: {
-    salesRepresentative: '',
-    paymentStatus: 'Pending',
-    paymentMethod: undefined,
-    paymentReceived: 0,
-    paymentReceipt: null,
-    deliveryStatus: 'Processing',
-    preferredDeliveryDate: '',
-    internalComments: '',
-    orderPriority: 'Low',
-    salesChannel: 'Online',
-    crmSync: false,
-    invoiceNumber: '',
-  },
-  compliance: {
-    exportLicense: '',
-    qualityCertification: undefined,
-    customsDeclaration: '',
-    complianceNotes: '',
-    digitalSignature: '',
-  },
-  confirmation: {
-    confirmedBy: '',
-    confirmationDate: '',
-    confirmationStatus: 'Pending',
-  },
-  notes: {
-    internalNotes: '',
-    clientNotes: '',
-  },
-  attachments: {
-    attachment: [],
-    attachmentName: [],
-  },
-  status: 'Draft',
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  createdBy: 'User',
-};
 
 export const useFormStore = create<FormState>()(
   persist(
@@ -135,20 +75,38 @@ export const useFormStore = create<FormState>()(
             updatedAt: new Date().toISOString(),
           },
         })),
-      resetField: <K extends keyof FormData>(path: `${K}.${keyof FormData[K]}`) =>
+      resetField: (path: FormDataPath) =>
         set((state) => {
-          const [section, field] = path.split('.') as [K, keyof FormData[K]];
-          return {
-            history: [...state.history, state.formData],
-            formData: {
-              ...state.formData,
-              [section]: {
-                ...state.formData[section],
-                [field]: initialFormData[section][field],
+          try {
+            // Create a deep copy of formData
+            const newFormData = merge({}, state.formData);
+            // Get the initial value for the path
+            let initialValue: any;
+            try {
+              initialValue = path.split('.').reduce((obj, key) => {
+                if (obj === undefined) throw new Error(`Invalid path: ${path}`);
+                return obj[key];
+              }, initialFormData as any);
+            } catch {
+              console.warn(`Invalid path: ${path}, skipping reset`);
+              return state;
+            }
+            // Set the value at the path
+            set(newFormData, path, initialValue);
+            return {
+              history: [...state.history, state.formData],
+              formData: {
+                ...newFormData,
+                updatedAt: new Date().toISOString(),
               },
-              updatedAt: new Date().toISOString(),
-            },
-          };
+            };
+          } catch (error) {
+            console.error(`Failed to reset field at path: ${path}`, error);
+            return {
+              ...state,
+              lastError: `Failed to reset field: ${path}`,
+            };
+          }
         }),
       addAttachment: (file: File) =>
         set((state) => ({
@@ -216,18 +174,14 @@ export const useFormStore = create<FormState>()(
         history: state.history,
       }),
       version: 1,
-      migrate: (persistedState, version) => {
-        if (version === 0) {
+      migrate: (persistedState: Partial<FormState>, version: number) => {
+        if (version < 1) {
           return {
-            ...persistedState,
-            formData: {
-              ...initialFormData,
-              ...persistedState.formData,
-              updatedAt: new Date().toISOString(),
-            },
+            formData: merge({}, initialFormData, persistedState.formData),
+            history: (persistedState.history || []).map((item) => merge({}, initialFormData, item)),
           };
         }
-        return persistedState;
+        return persistedState as FormState;
       },
     }
   )

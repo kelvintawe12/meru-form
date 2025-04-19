@@ -168,8 +168,8 @@ const formSchema = z.object({
     clientNotes: z.string(),
   }),
   attachments: z.object({
-    attachment: z.array(z.instanceof(File)),
-    attachmentName: z.array(z.string()),
+    attachment: z.array(z.instanceof(File)).optional(),
+    attachmentName: z.array(z.string()).optional(),
   }),
   status: z.enum(['Draft', 'Submitted', 'Approved', 'Rejected']),
   createdAt: z.string(),
@@ -179,7 +179,7 @@ const formSchema = z.object({
 
 const OrderForm: React.FC = () => {
   const { t } = useTranslation();
-  const { formData, updateDraft, setDraft, clearDraft, isSubmitting, lastError } = useFormStore();
+  const { formData, updateDraft, setDraft, clearDraft, resetField, addAttachment, removeAttachment, undo, isSubmitting, lastError } = useFormStore();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -249,18 +249,24 @@ const OrderForm: React.FC = () => {
           <section>
             <h2 className="text-xl font-semibold mb-4">{t('form.attachments')}</h2>
             <Input
-              name="attachments.attachment"
               label="form.attachments"
               type="file"
               multiple
               onChange={(e) => {
                 const files = Array.from(e.target.files || []);
-                const names = files.map((file) => file.name);
-                updateDraft({
-                  attachments: { attachment: files, attachmentName: names },
-                });
+                files.forEach((file) => addAttachment(file));
               }}
             />
+            <div className="mt-4">
+              {formData.attachments.attachmentName.map((name, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <span>{name}</span>
+                  <Button variant="danger" onClick={() => removeAttachment(index)}>
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              ))}
+            </div>
           </section>
           <div className="flex justify-end gap-4">
             <Button
@@ -272,10 +278,20 @@ const OrderForm: React.FC = () => {
             </Button>
             <Button
               variant="secondary"
-              onClick={() => methods.resetField('clientInfo.fullName')}
+              onClick={() => {
+                methods.resetField('clientInfo.fullName');
+                resetField('clientInfo.fullName');
+              }}
               disabled={isSubmitting}
             >
               {t('form.resetFullName')}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => undo()}
+              disabled={isSubmitting || !useFormStore.getState().history.length}
+            >
+              {t('form.undo')}
             </Button>
             <Button
               variant="primary"
