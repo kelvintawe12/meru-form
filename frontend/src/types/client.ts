@@ -13,7 +13,7 @@ export interface ClientInfo {
     loyaltyProgram?: boolean;
     clientTier: 'Standard' | 'Premium' | 'Enterprise';
     accountManager?: string;
-    clientPhoto?: File | string;
+    clientPhoto?: File | null;
   }
   
   export interface Client {
