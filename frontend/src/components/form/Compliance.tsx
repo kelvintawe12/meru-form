@@ -88,17 +88,17 @@ const OrderDetails: React.FC = () => {
       <Button
         variant="primary"
         onClick={() => append({
-          orderCategory: '',
-          productName: '',
+          orderCategory: 'Retail',
+          productName: 'Soy Oil',
           sku: `SOY-${Math.random().toString(36).slice(2, 7)}`,
-          unitType: '',
+          unitType: 'Liters',
           quantity: 1,
           unitPrice: 0,
           discount: 0,
           notes: '',
           orderUrgency: 'Standard',
-          packagingPreference: '',
-          paymentSchedule: '',
+          packagingPreference: 'Standard',
+          paymentSchedule: undefined,
         })}
       >
         {t('form.addProduct')}

@@ -13,7 +13,7 @@ interface FormState {
   updateDraft: (data: Partial<FormData>) => void;
   clearDraft: () => void;
   clearSection: <K extends keyof FormData>(section: K) => void;
-  resetField: <K extends keyof FormData>(path: `${K}.${keyof FormData[K]}`) => void;
+  resetField: <K extends keyof FormData>(path: `${K}.${Extract<keyof FormData[K], string>}`) => void;
   addAttachment: (file: File) => void;
   removeAttachment: (index: number) => void;
   setStatus: (status: FormData['status']) => void;
@@ -135,7 +135,7 @@ export const useFormStore = create<FormState>()(
             updatedAt: new Date().toISOString(),
           },
         })),
-      resetField: <K extends keyof FormData>(path: `${K}.${keyof FormData[K]}`) =>
+      resetField: <K extends keyof FormData>(path: `${K}.${Extract<keyof FormData[K], string>}`) =>
         set((state) => {
           const [section, field] = path.split('.') as [K, keyof FormData[K]];
           return {
@@ -143,8 +143,10 @@ export const useFormStore = create<FormState>()(
             formData: {
               ...state.formData,
               [section]: {
-                ...state.formData[section],
-                [field]: initialFormData[section][field],
+                ...(typeof state.formData[section] === 'object' && state.formData[section] !== null ? state.formData[section] : {}),
+                [field]: initialFormData[section] && typeof initialFormData[section] === 'object' 
+                  ? (initialFormData[section] as Record<string, unknown>)[field] 
+                  : undefined,
               },
               updatedAt: new Date().toISOString(),
             },
@@ -216,12 +218,12 @@ export const useFormStore = create<FormState>()(
         history: state.history,
       }),
       version: 1,
-      migrate: (persistedState: Partial<FormState>, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
+        const state = persistedState as Partial<FormState>;
         if (version < 1) {
-          // Merge persisted formData with initialFormData to ensure all fields are present
           return {
-            formData: merge({}, initialFormData, persistedState.formData),
-            history: (persistedState.history || []).map((item) => merge({}, initialFormData, item)),
+            formData: merge({}, initialFormData, state.formData),
+            history: (state.history || []).map((item) => merge({}, initialFormData, item)),
           };
         }
         return persistedState as FormState;

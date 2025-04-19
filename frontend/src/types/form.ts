@@ -95,4 +95,5 @@ export interface ClientInfo {
     createdAt: string;
     updatedAt: string;
     createdBy: string;
+    
   }

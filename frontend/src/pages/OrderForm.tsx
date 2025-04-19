@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import ClientInfo from '../components/form/ClientInfo';
@@ -182,7 +182,7 @@ const OrderForm: React.FC = () => {
   const { formData, updateDraft, setDraft, clearDraft, resetField, addAttachment, removeAttachment, undo, isSubmitting, lastError } = useFormStore();
 
   const methods = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver<typeof formSchema, any, FormData>(formSchema),
     defaultValues: formData,
   });
 
@@ -192,7 +192,7 @@ const OrderForm: React.FC = () => {
   }, [formData, methods]);
 
   // Update store on form changes
-  const onChange = (data: FormData) => {
+  const onChange: SubmitHandler<FormData> = (data) => {
     updateDraft(data);
   };
 
@@ -216,7 +216,7 @@ const OrderForm: React.FC = () => {
       {lastError && <div className="text-red-500 mb-4">{lastError}</div>}
       {isSubmitting && <div className="text-teal-600 mb-4">{t('form.saving')}</div>}
       <FormProvider {...methods}>
-        <form onChange={methods.handleSubmit(onChange)} onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
+        <form onChange={() => methods.handleSubmit(onChange)()} onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
           <section>
             <h2 className="text-xl font-semibold mb-4">{t('form.clientInfo')}</h2>
             <ClientInfo />
@@ -248,14 +248,15 @@ const OrderForm: React.FC = () => {
           </section>
           <section>
             <h2 className="text-xl font-semibold mb-4">{t('form.attachments')}</h2>
-            <Input
-              label="form.attachments"
+            <input
+              aria-label={t('form.attachments')}
               type="file"
               multiple
               onChange={(e) => {
                 const files = Array.from(e.target.files || []);
-                files.forEach((file) => addAttachment(file));
+                files.forEach((file) => addAttachment(file as File));
               }}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
             <div className="mt-4">
               {formData.attachments.attachmentName.map((name, index) => (
