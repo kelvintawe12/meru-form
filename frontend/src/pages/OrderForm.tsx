@@ -1,115 +1,181 @@
-import React, { useEffect } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { formSchema } from '../utils/validators';
-import { useFormStore } from '../stores/formStore';
-import { useAutosave } from '../hooks/useAutosave';
-import FormSection from '../components/form/FormSection';
-import ClientInfo from '../components/form/ClientInfo';
-import OrderDetails from '../components/form/OrderDetails';
-import Dispatch from '../components/form/Dispatch';
-import SalesOps from '../components/form/SalesOps';
-import Compliance from '../components/form/Compliance';
-import ReviewSubmit from '../components/form/ReviewSubmit';
-import Sidebar from '../components/Layout/Sidebar';
-import Modal from '../components/ui/Modal';
-import Button from '../components/common/Button';
+import { toast } from 'react-toastify';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { FormData } from '../types/form';
+import logo from '../../assets/images/meru-logo.png';
 
-const OrderForm: React.FC = () => {
+export const usePDFGenerator = () => {
   const { t } = useTranslation();
-  const methods = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: useFormStore.getState().formData,
-  });
-  const { setDraft, clearDraft, loadDraft } = useFormStore();
-  const [isClearModalOpen, setClearModalOpen] = React.useState(false);
 
-  useAutosave(methods.watch, (data) => setDraft(data));
+  const generatePDF = useCallback(
+    (formData: FormData, fileName: string = 'order_summary.pdf') => {
+      try {
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
 
-  useEffect(() => {
-    const savedDraft = loadDraft();
-    if (savedDraft) {
-      methods.reset(savedDraft);
-    }
-  }, [methods, loadDraft]);
+        // Attempt to add logo
+        let logoHeight = 0;
+        try {
+          const img = new Image();
+          img.src = logo;
+          img.onload = () => {
+            const imgWidth = 50; // Larger logo for splash effect
+            logoHeight = (img.height * imgWidth) / img.width; // Maintain aspect ratio
+            const logoX = (pageWidth - imgWidth) / 2; // Center logo
+            doc.addImage(logo, 'PNG', logoX, 10, imgWidth, logoHeight);
+          };
+          img.onerror = () => {
+            throw new Error('Failed to load logo image');
+          };
+        } catch (imgError) {
+          console.warn('Logo loading failed:', imgError);
+          toast.warn(t('form.pdfImageWarning'));
+        }
 
-  const handleClearForm = () => {
-    methods.reset();
-    clearDraft();
-    setClearModalOpen(false);
-  };
+        // Title (centered)
+        doc.setFontSize(18);
+        const title = t('form.title');
+        const titleWidth = doc.getTextWidth(title);
+        doc.text(title, (pageWidth - titleWidth) / 2, logoHeight ? logoHeight + 20 : 30);
 
-  const sections = [
-    { id: 'clientInfo', title: t('form.clientInfo'), component: <ClientInfo /> },
-    { id: 'orderDetails', title: t('form.orderDetails'), component: <OrderDetails /> },
-    { id: 'dispatch', title: t('form.dispatch'), component: <Dispatch /> },
-    { id: 'salesOps', title: t('form.salesOps'), component: <SalesOps /> },
-    { id: 'compliance', title: t('form.compliance'), component: <Compliance /> },
-    { id: 'reviewSubmit', title: t('form.reviewSubmit'), component: <ReviewSubmit /> },
-  ];
+        // Client Info Table
+        autoTable(doc, {
+          startY: logoHeight ? logoHeight + 40 : 50,
+          head: [[t('form.clientInfo')]],
+          body: [
+            [t('form.fullName'), formData.clientInfo.fullName],
+            [t('form.phoneNumber'), formData.clientInfo.phoneNumber],
+            [t('form.email'), formData.clientInfo.email || '-'],
+            [t('form.address'), formData.clientInfo.address],
+            [t('form.clientCategory'), t(`options.${formData.clientInfo.clientCategory}`)],
+            [t('form.dateOfRegistration'), formData.clientInfo.dateOfRegistration],
+            [t('form.preferredContactMethod'), t(`options.${formData.clientInfo.preferredContactMethod}`)],
+            [t('form.clientTier'), t(`options.${formData.clientInfo.clientTier}`)],
+          ],
+          theme: 'striped',
+          headStyles: { fillColor: [0, 105, 92] }, // Teal
+        });
 
-  return (
-    <FormProvider {...methods}>
-      <motion.div
-        className="container mx-auto p-4 flex flex-col md:flex-row gap-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <div className="flex-grow">
-          <div className="form-card">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold text-teal-600">{t('form.title')}</h1>
-              <div className="space-x-2">
-                <Button
-                  variant="secondary"
-                  onClick={() => setDraft(methods.getValues())}
-                >
-                  {t('form.save')}
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={() => setClearModalOpen(true)}
-                >
-                  {t('form.clearForm')}
-                </Button>
-              </div>
-            </div>
-            <div className="space-y-6">
-              {sections.map((section) => (
-                <FormSection
-                  key={section.id}
-                  id={section.id}
-                  title={section.title}
-                  onClear={() => methods.resetField(section.id as any)}
-                >
-                  {section.component}
-                </FormSection>
-              ))}
-            </div>
-          </div>
-        </div>
-        <Sidebar />
-        <Modal
-          isOpen={isClearModalOpen}
-          onClose={() => setClearModalOpen(false)}
-          title={t('form.clearForm')}
-        >
-          <p>{t('form.clearFormConfirm')}</p>
-          <div className="mt-4 flex justify-end gap-2">
-            <Button variant="secondary" onClick={() => setClearModalOpen(false)}>
-              {t('form.cancel')}
-            </Button>
-            <Button variant="danger" onClick={handleClearForm}>
-              {t('form.clear')}
-            </Button>
-          </div>
-        </Modal>
-      </motion.div>
-    </FormProvider>
+        // Order Details Table
+        autoTable(doc, {
+          startY: (doc as any).lastAutoTable.finalY + 10,
+          head: [[t('form.orderDetails')]],
+          body: formData.orderDetails.map((order, index) => [
+            index + 1,
+            t(`options.${order.productName}`),
+            order.sku,
+            t(`options.${order.unitType}`),
+            order.quantity,
+            order.unitPrice,
+            order.discount || 0,
+            t(`options.${order.orderUrgency}`),
+          ]),
+          columns: [
+            { header: '#', dataKey: 'index' },
+            { header: t('form.productName'), dataKey: 'productName' },
+            { header: t('form.sku'), dataKey: 'sku' },
+            { header: t('form.unitType'), dataKey: 'unitType' },
+            { header: t('form.quantity'), dataKey: 'quantity' },
+            { header: t('form.unitPrice'), dataKey: 'unitPrice' },
+            { header: t('form.discount'), dataKey: 'discount' },
+            { header: t('form.orderUrgency'), dataKey: 'orderUrgency' },
+          ],
+          theme: 'striped',
+          headStyles: { fillColor: [0, 105, 92] },
+        });
+
+        // Dispatch Table
+        autoTable(doc, {
+          startY: (doc as any).lastAutoTable.finalY + 10,
+          head: [[t('form.dispatch')]],
+          body: formData.dispatch.map((dispatch, index) => [
+            index + 1,
+            dispatch.dispatchDate,
+            dispatch.product,
+            dispatch.quantityDispatched,
+            t(`options.${dispatch.transportMethod}`),
+            dispatch.trackingReference || '-',
+            t(`options.${dispatch.dispatchStatus}`),
+          ]),
+          columns: [
+            { header: '#', dataKey: 'index' },
+            { header: t('form.dispatchDate'), dataKey: 'dispatchDate' },
+            { header: t('form.product'), dataKey: 'product' },
+            { header: t('form.quantityDispatched'), dataKey: 'quantityDispatched' },
+            { header: t('form.transportMethod'), dataKey: 'transportMethod' },
+            { header: t('form.trackingReference'), dataKey: 'trackingReference' },
+            { header: t('form.dispatchStatus'), dataKey: 'dispatchStatus' },
+          ],
+          theme: 'striped',
+          headStyles: { fillColor: [0, 105, 92] },
+        });
+
+        // Sales & Operations Table
+        autoTable(doc, {
+          startY: (doc as any).lastAutoTable.finalY + 10,
+          head: [[t('form.salesOps')]],
+          body: [
+            [t('form.salesRepresentative'), formData.salesOps.salesRepresentative || '-'],
+            [t('form.paymentStatus'), t(`options.${formData.salesOps.paymentStatus}`)],
+            [t('form.deliveryStatus'), t(`options.${formData.salesOps.deliveryStatus}`)],
+            [t('form.orderPriority'), t(`options.${formData.salesOps.orderPriority}`)],
+            [t('form.salesChannel'), t(`options.${formData.salesOps.salesChannel}`)],
+          ],
+          theme: 'striped',
+          headStyles: { fillColor: [0, 105, 92] },
+        });
+
+        // Compliance Table
+        autoTable(doc, {
+          startY: (doc as any).lastAutoTable.finalY + 10,
+          head: [[t('form.compliance')]],
+          body: [
+            [t('form.digitalSignature'), formData.compliance.digitalSignature],
+            [t('form.qualityCertification'), t(`options.${formData.compliance.qualityCertification || 'None'}`)],
+          ],
+          theme: 'striped',
+          headStyles: { fillColor: [0, 105, 92] },
+        });
+
+        // Footer
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        const footerText = `Mount Meru SoyCo Rwanda - ${new Date().toLocaleDateString()}`;
+        const footerWidth = doc.getTextWidth(footerText);
+        doc.text(footerText, (pageWidth - footerWidth) / 2, pageHeight - 10);
+
+        // Save PDF and return blob
+        const pdfBlob = doc.output('blob');
+        doc.save(fileName);
+        toast.success(t('form.pdfGenerated'));
+        return pdfBlob;
+      } catch (error) {
+        toast.error(t('form.pdfError'));
+        console.error('PDF generation error:', error);
+        return null;
+      }
+    },
+    [t],
   );
-};
 
-export default OrderForm;
+  const shareViaWhatsApp = useCallback(
+    (pdfBlob: Blob, phoneNumber: string, message: string = t('form.whatsappMessage')) => {
+      try {
+        const url = URL.createObjectURL(pdfBlob);
+        const encodedMessage = encodeURIComponent(`${message} ${url}`);
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+        toast.success(t('form.whatsappShared'));
+      } catch (error) {
+        toast.error(t('form.whatsappError'));
+        console.error('WhatsApp sharing error:', error);
+      }
+    },
+    [t],
+  );
+
+  return { generatePDF, shareViaWhatsApp };
+};

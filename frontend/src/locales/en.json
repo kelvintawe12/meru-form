@@ -100,7 +100,14 @@
       "clear": "Clear",
       "saved": "Form saved successfully",
       "initializeDraft": "Initialize Draft",
-      "viewDraft": "View Draft"
+      "viewDraft": "View Draft",
+      "pdfGenerated": "PDF generated successfully",
+      "pdfError": "Failed to generate PDF",
+      "pdfImageWarning": "Could not load logo image, proceeding without it",
+      "whatsappMessage": "Here is your order summary PDF",
+      "whatsappShared": "PDF shared via WhatsApp",
+      "whatsappError": "Failed to share PDF via WhatsApp",
+      "whatsappNoPhone": "Please provide a phone number to share via WhatsApp"
     },
     "options": {
       "Male": "Male",

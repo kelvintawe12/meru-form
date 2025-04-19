@@ -104,7 +104,14 @@
       "officialStamp": "Ikirango cy’Urwego",
       "confirmationDate": "Itariki y’icyemezo",
       "initializeDraft": "Tangiza Ifishi",
-      "viewDraft": "Reba Ifishi"
+      "viewDraft": "Reba Ifishi",
+      "pdfGenerated": "PDF yabitswe neza",
+      "pdfError": "Ntibyashobotse gukora PDF",
+      "pdfImageWarning": "Ntabwo ishusho ya logo yashoboye gutangira, tuzakomeza nta yo",
+      "whatsappMessage": "Aha ni PDF y'ibizamini byawe",
+      "whatsappShared": "PDF yashyikirijwe kuri WhatsApp",
+      "whatsappNoPhone": "Nyamuneka tanga numero ya terefone kugirango ushyireho kuri WhatsApp",
+      "whatsappError": "Ntibyashobotse gushyiraho PDF kuri WhatsApp"
     },
     "options": {
       "Male": "Igitsina cy’Umugabo",
