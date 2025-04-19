@@ -12,7 +12,7 @@ export const useFormDraft = () => {
       clientInfo: {
         ...initialFormData.clientInfo,
         ...clientInfo,
-      },
+      } as { [key: string]: string | number },
     };
     setDraft(newDraft);
     return newDraft;

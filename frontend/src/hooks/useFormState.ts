@@ -92,7 +92,7 @@ export const useFormStore = create<FormState>()(
               return state;
             }
             // Set the value at the path
-            set(newFormData, path, initialValue);
+            newFormData[path] = initialValue;
             return {
               history: [...state.history, state.formData],
               formData: {
@@ -124,7 +124,7 @@ export const useFormStore = create<FormState>()(
           formData: {
             ...state.formData,
             attachments: {
-              attachment: state.formData.attachments.attachment.filter((_, i) => i !== index),
+              attachment: state.formData.attachment.filter((_, i) => i !== index),
               attachmentName: state.formData.attachments.attachmentName.filter((_, i) => i !== index),
             },
             updatedAt: new Date().toISOString(),
