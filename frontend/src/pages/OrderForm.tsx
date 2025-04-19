@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,6 +14,7 @@ import Input from '../components/common/Input';
 import Select from '../components/common/Select';
 import { Trash2 } from 'lucide-react';
 import { FormData } from '../types/form';
+import { useFormStore } from '../stores/formStore';
 
 // Dispatch component for dispatch section
 const Dispatch: React.FC = () => {
@@ -101,7 +102,7 @@ const formSchema = z.object({
     loyaltyProgram: z.boolean().optional(),
     clientTier: z.enum(['Standard', 'Premium', 'Enterprise']),
     accountManager: z.string().optional(),
-    clientPhoto: z.any().optional(),
+    clientPhoto: z.instanceof(File).optional().nullable(),
   }),
   orderDetails: z
     .array(
@@ -141,7 +142,7 @@ const formSchema = z.object({
     paymentStatus: z.enum(['Pending', 'Partial', 'Paid']),
     paymentMethod: z.enum(['Cash on Delivery', 'M-Pesa', 'Bank Transfer', 'Credit']).optional(),
     paymentReceived: z.number().optional(),
-    paymentReceipt: z.any().optional(),
+    paymentReceipt: z.instanceof(File).optional().nullable(),
     deliveryStatus: z.enum(['Processing', 'Dispatched', 'Delivered', 'Cancelled']),
     preferredDeliveryDate: z.string().optional(),
     internalComments: z.string().optional(),
@@ -157,82 +158,65 @@ const formSchema = z.object({
     complianceNotes: z.string().optional(),
     digitalSignature: z.string().min(1, 'form.digitalSignatureRequired'),
   }),
-  confirmation: z.boolean().refine((val) => val === true, { message: 'form.confirmationRequired' }),
-  emailPDF: z.boolean().optional(),
-  shareWithManager: z.boolean().optional(),
-});
+  confirmation: z.object({
+    confirmedBy: z.string(),
+    confirmationDate: z.string(),
+    confirmationStatus: z.enum(['Pending', 'Confirmed', 'Rejected']),
+  }),
+  notes: z.object({
+    internalNotes: z.string(),
+    clientNotes: z.string(),
+  }),
+  attachments: z.object({
+    attachment: z.array(z.instanceof(File)),
+    attachmentName: z.array(z.string()),
+  }),
+  status: z.enum(['Draft', 'Submitted', 'Approved', 'Rejected']),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  createdBy: z.string(),
+}).strict();
 
 const OrderForm: React.FC = () => {
   const { t } = useTranslation();
+  const { formData, updateDraft, setDraft, clearDraft, isSubmitting, lastError } = useFormStore();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      clientInfo: {
-        fullName: '',
-        phoneNumber: '',
-        email: '',
-        gender: undefined,
-        address: '',
-        clientCategory: 'Farmer',
-        dateOfRegistration: new Date().toISOString().split('T')[0],
-        referredBy: '',
-        preferredContactMethod: 'SMS',
-        businessName: '',
-        taxId: '',
-        loyaltyProgram: false,
-        clientTier: 'Standard',
-        accountManager: '',
-        clientPhoto: null,
-      },
-      orderDetails: [
-        {
-          orderCategory: 'Retail',
-          productName: 'Soy Oil',
-          sku: `SOY-${Math.random().toString(36).slice(2, 7)}`,
-          unitType: 'Liters',
-          quantity: 1,
-          unitPrice: 0,
-          discount: 0,
-          notes: '',
-          orderUrgency: 'Standard',
-          packagingPreference: undefined,
-          paymentSchedule: undefined,
-        },
-      ],
-      dispatch: [],
-      salesOps: {
-        salesRepresentative: '',
-        paymentStatus: 'Pending',
-        paymentMethod: undefined,
-        paymentReceived: 0,
-        paymentReceipt: null,
-        deliveryStatus: 'Processing',
-        preferredDeliveryDate: '',
-        internalComments: '',
-        orderPriority: 'Low',
-        salesChannel: 'Online',
-        crmSync: false,
-        invoiceNumber: '',
-      },
-      compliance: {
-        exportLicense: '',
-        qualityCertification: undefined,
-        customsDeclaration: '',
-        complianceNotes: '',
-        digitalSignature: '',
-      },
-      confirmation: false,
-      emailPDF: false,
-      shareWithManager: false,
-    },
+    defaultValues: formData,
   });
+
+  // Sync formData from store to react-hook-form
+  useEffect(() => {
+    methods.reset(formData);
+  }, [formData, methods]);
+
+  // Update store on form changes
+  const onChange = (data: FormData) => {
+    updateDraft(data);
+  };
+
+  // Handle form submission
+  const onSubmit = async (data: FormData) => {
+    try {
+      await useFormStore.getState().saveDraftAsync({
+        ...data,
+        status: 'Submitted',
+      });
+      // Redirect or show success
+      window.location.href = '/success';
+    } catch (error) {
+      console.error('Submission error:', error);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">{t('form.title')}</h1>
+      {lastError && <div className="text-red-500 mb-4">{lastError}</div>}
+      {isSubmitting && <div className="text-teal-600 mb-4">{t('form.saving')}</div>}
       <FormProvider {...methods}>
-        <form className="space-y-8">
+        <form onChange={methods.handleSubmit(onChange)} onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
           <section>
             <h2 className="text-xl font-semibold mb-4">{t('form.clientInfo')}</h2>
             <ClientInfo />
@@ -257,12 +241,48 @@ const OrderForm: React.FC = () => {
             <h2 className="text-xl font-semibold mb-4">{t('form.reviewSubmit')}</h2>
             <ReviewSubmit />
           </section>
+          <section>
+            <h2 className="text-xl font-semibold mb-4">{t('form.notes')}</h2>
+            <Input name="notes.internalNotes" label="form.internalNotes" />
+            <Input name="notes.clientNotes" label="form.clientNotes" />
+          </section>
+          <section>
+            <h2 className="text-xl font-semibold mb-4">{t('form.attachments')}</h2>
+            <Input
+              name="attachments.attachment"
+              label="form.attachments"
+              type="file"
+              multiple
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                const names = files.map((file) => file.name);
+                updateDraft({
+                  attachments: { attachment: files, attachmentName: names },
+                });
+              }}
+            />
+          </section>
           <div className="flex justify-end gap-4">
             <Button
               variant="secondary"
-              onClick={() => methods.reset()}
+              onClick={() => clearDraft()}
+              disabled={isSubmitting}
             >
-              {t('form.reset')}
+              {t('form.clear')}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => methods.resetField('clientInfo.fullName')}
+              disabled={isSubmitting}
+            >
+              {t('form.resetFullName')}
+            </Button>
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {t('form.submit')}
             </Button>
           </div>
         </form>

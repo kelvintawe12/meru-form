@@ -89,7 +89,7 @@ export const usePDFGenerator = () => {
         autoTable(doc, {
           startY: (doc as any).lastAutoTable.finalY + 10,
           head: [[t('form.dispatch')]],
-          body: formData.dispatch.map((dispatch, index) => [
+          body: (formData.dispatch ?? []).map((dispatch, index) => [
             index + 1,
             dispatch.dispatchDate,
             dispatch.product,

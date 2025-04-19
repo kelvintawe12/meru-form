@@ -79,7 +79,25 @@ const initialFormData: FormData = {
     complianceNotes: '',
     digitalSignature: '',
   },
-};
+},
+  confirmation: {
+    confirmedBy: '',
+    confirmationDate: '',
+    confirmationStatus: 'Pending',
+  },
+    notes: {
+        internalNotes: '',
+        clientNotes: '',
+    },
+    attachments: {
+        attachment: [],
+        attachmentName: [],
+    },
+    history: [],
+    status: 'Draft',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    createdBy: 'User',
 
 export const useFormStore = create<FormState>()(
   persist(

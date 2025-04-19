@@ -66,13 +66,33 @@ export interface ClientInfo {
     digitalSignature: string;
   }
   
+  export interface Confirmation {
+    confirmedBy: string;
+    confirmationDate: string;
+    confirmationStatus: 'Pending' | 'Confirmed' | 'Rejected';
+  }
+  
+  export interface Notes {
+    internalNotes: string;
+    clientNotes: string;
+  }
+  
+  export interface Attachments {
+    attachment: File[];
+    attachmentName: string[];
+  }
+  
   export interface FormData {
     clientInfo: ClientInfo;
     orderDetails: OrderEntry[];
-    dispatch: DispatchEntry[];
+    dispatch: DispatchEntry[] | undefined;
     salesOps: SalesOps;
     compliance: Compliance;
-    confirmation: boolean;
-    emailPDF?: boolean;
-    shareWithManager?: boolean;
+    confirmation: Confirmation;
+    notes: Notes;
+    attachments: Attachments;
+    status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
+    createdAt: string;
+    updatedAt: string;
+    createdBy: string;
   }
