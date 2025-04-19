@@ -3,15 +3,14 @@ import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Languages, Menu, X, Home, ShoppingCart, User, HelpCircle, Users } from 'lucide-react';
-import { useLanguage } from '../../contexts/LanguageContext';
 
 const Navbar: React.FC = () => {
-  const { t } = useTranslation();
-  const { language, setLanguage } = useLanguage();
+  const { t, i18n } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'rw' : 'en');
+    const newLang = i18n.language === 'en' ? 'rw' : 'en';
+    i18n.changeLanguage(newLang);
   };
 
   const toggleMobileMenu = () => {
@@ -125,7 +124,7 @@ const Navbar: React.FC = () => {
               ))}
             </div>
 
-            {/* Language Toggle */}
+            {/* Language Toggle - Now properly connected to i18n */}
             <motion.button
               onClick={toggleLanguage}
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-br from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-slate-900 transition-all duration-300 group"
@@ -133,13 +132,13 @@ const Navbar: React.FC = () => {
               whileTap={{ scale: 0.95 }}
             >
               <motion.div
-                animate={{ rotate: language === 'en' ? 0 : 360 }}
+                animate={{ rotate: i18n.language === 'en' ? 0 : 360 }}
                 transition={{ duration: 0.5 }}
               >
                 <Languages size={20} className="transition-transform group-hover:rotate-12" />
               </motion.div>
               <span className="font-semibold text-sm uppercase tracking-wide">
-                {language === 'en' ? 'EN' : 'RW'}
+                {i18n.language === 'en' ? 'EN' : 'RW'}
               </span>
             </motion.button>
 
@@ -181,11 +180,9 @@ const Navbar: React.FC = () => {
                       }
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      {({ isActive }) => (
-                        <span className={isActive ? 'text-amber-400' : 'text-slate-400'}>
-                          {link.icon}
-                        </span>
-                      )}
+                      <span className={i18n.language === 'en' ? 'text-amber-400' : 'text-slate-400'}>
+                        {link.icon}
+                      </span>
                       <span className="font-medium">{link.label}</span>
                     </NavLink>
                   </motion.div>
