@@ -82,18 +82,52 @@ export interface ClientInfo {
     attachmentName: string[];
   }
   
-  export interface FormData {
-    clientInfo: ClientInfo;
-    orderDetails: OrderEntry[];
-    dispatch: DispatchEntry[] | undefined;
-    salesOps: SalesOps;
-    compliance: Compliance;
-    confirmation: Confirmation;
-    notes: Notes;
-    attachments: Attachments;
-    status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
-    createdAt: string;
-    updatedAt: string;
-    createdBy: string;
-    
-  }
+export interface DispatchDetail {
+    dispatchDate?: string;
+    dispatchTime?: string;
+    vehicleNumber?: string;
+    driverName?: string;
+    contactNumber?: string;
+    notes?: string;
+}
+
+export interface SalesOpsDetail {
+    operationDate?: string;
+    operationType?: string;
+    notes?: string;
+}
+
+export interface ComplianceDetail {
+    complianceType?: string;
+    status?: string;
+    notes?: string;
+}
+
+export interface AdminConfirmationDetail {
+    confirmationDate?: string;
+    confirmedBy?: string;
+    notes?: string;
+}
+
+export interface FormData {
+    clientInfo: {
+        [key: string]: string | number;
+    };
+    orderDetails: Array<{
+        orderCategory?: string;
+        productName?: string;
+        sku?: string;
+        unitType?: string;
+        quantity?: number;
+        unitPrice?: number;
+        discount?: number;
+        orderUrgency?: string;
+        packagingPreference?: string;
+        notes?: string;
+        paymentSchedule?: string;
+    }>;
+    dispatchDetails: DispatchDetail[];
+    salesOpsDetails: SalesOpsDetail[];
+    complianceDetails: ComplianceDetail[];
+    adminConfirmationDetails: AdminConfirmationDetail[];
+}
