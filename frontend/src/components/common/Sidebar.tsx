@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home,
   ShoppingCart,
@@ -9,8 +9,8 @@ import {
   HelpCircle,
   User,
   Package,
-  ChevronLeft,
-  ChevronRight,
+  X,
+  Menu
 } from 'lucide-react';
 
 const recentOrders = [
@@ -18,31 +18,28 @@ const recentOrders = [
   { id: 2, product: 'Soy Grains (10kg)', status: 'Delivered', date: '2025-04-10' },
 ];
 
-const Sidebar: React.FC = () => {
+const FloatingSidebar: React.FC = () => {
   const { t } = useTranslation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
-  const closeSidebar = () => setIsCollapsed(true);
+  const togglePopup = () => setIsOpen(!isOpen);
+  const closePopup = () => setIsOpen(false);
 
-  const sidebarVariants = {
-    hidden: { x: '100%', opacity: 0 },
-    visible: {
-      x: 0,
+  const popupVariants = {
+    hidden: { scale: 0.95, opacity: 0, y: 20 },
+    visible: { 
+      scale: 1,
       opacity: 1,
-      transition: { duration: 0.4, ease: [0.33, 1, 0.68, 1] }
+      y: 0,
+      transition: { type: 'spring', stiffness: 300, damping: 25 }
     },
-  };
-
-  const sectionVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, x: 8 },
+    hidden: { opacity: 0, x: 10 },
     visible: { opacity: 1, x: 0 },
-    hover: { background: 'rgba(251, 191, 36, 0.08)', scale: 1.02 }
+    hover: { scale: 1.02, backgroundColor: 'rgba(251, 191, 36, 0.05)' }
   };
 
   const navLinks = [
@@ -55,135 +52,134 @@ const Sidebar: React.FC = () => {
 
   return (
     <>
-      <motion.aside
-        className={`fixed right-0 h-screen bg-gradient-to-b from-meru-black to-meru-slate/80 backdrop-blur-lg p-6 shadow-2xl transition-all duration-300 z-50 ${
-          isCollapsed ? 'w-20' : 'w-80'
-        }`}
-        variants={sidebarVariants}
-        initial="hidden"
-        animate="visible"
+      {/* Floating Action Button */}
+      <motion.button
+        onClick={togglePopup}
+        className="fixed bottom-8 right-8 z-50 p-4 bg-meru-red rounded-full shadow-xl hover:bg-meru-amber transition-colors"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <button
-          className="absolute -left-3 top-6 bg-meru-red p-2 rounded-full text-meru-white hover:bg-meru-amber transition-all shadow-lg hover:shadow-meru-amber/20"
-          onClick={toggleCollapse}
-        >
-          {isCollapsed ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-        </button>
-
-        {!isCollapsed && (
-          <motion.div className="space-y-8" variants={sectionVariants}>
-            {/* Quick Links */}
-            <motion.div variants={sectionVariants}>
-              <h3 className="text-lg font-bold text-meru-amber mb-4 uppercase tracking-wide">
-                {t('sidebar.quickLinks')}
-              </h3>
-              <ul className="space-y-1.5">
-                {navLinks.map((link) => (
-                  <motion.li 
-                    key={link.to} 
-                    variants={itemVariants} 
-                    whileHover="hover"
-                  >
-                    <NavLink
-                      to={link.to}
-                      onClick={closeSidebar}
-                      className={({ isActive }) =>
-                        `group flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors duration-200 ${
-                          isActive
-                            ? 'bg-meru-red/10 text-meru-amber border-r-4 border-meru-amber'
-                            : 'text-meru-white/90 hover:text-meru-amber'
-                        }`
-                      }
-                    >
-                      <span className="shrink-0">{link.icon}</span>
-                      <span className="text-sm font-medium">{link.label}</span>
-                    </NavLink>
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
-
-            {/* Recent Orders */}
-            <motion.div variants={sectionVariants}>
-              <h3 className="text-lg font-bold text-meru-amber mb-4 uppercase tracking-wide">
-                {t('sidebar.recentOrders')}
-              </h3>
-              <ul className="space-y-3">
-                {recentOrders.map((order) => (
-                  <motion.li
-                    key={order.id}
-                    className="p-3 rounded-xl bg-meru-slate/20 backdrop-blur-sm"
-                    variants={itemVariants}
-                    whileHover="hover"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-meru-slate/30 rounded-lg">
-                        <Package className="h-5 w-5 text-meru-amber" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-meru-white">{order.product}</p>
-                        <div className="flex items-center justify-between mt-2">
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            order.status === 'Delivered' 
-                              ? 'bg-green-500/20 text-green-400'
-                              : 'bg-amber-500/20 text-amber-400'
-                          }`}>
-                            {order.status}
-                          </span>
-                          <span className="text-xs text-meru-gray">{order.date}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
-
-            {/* Product Highlight */}
-            <motion.div variants={sectionVariants}>
-              <h3 className="text-lg font-bold text-meru-amber mb-4 uppercase tracking-wide">
-                {t('sidebar.productHighlight')}
-              </h3>
-              <motion.div 
-                className="group relative overflow-hidden rounded-xl bg-meru-slate/20 backdrop-blur-sm p-4"
-                whileHover={{ scale: 1.02 }}
-              >
-                <div className="aspect-square w-full mb-3 rounded-lg overflow-hidden">
-                  <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Soybean_oil_bottle.jpg"
-                    alt="Soy Oil"
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-                <p className="text-sm font-semibold text-meru-white mb-1">
-                  {t('sidebar.featuredProduct')}
-                </p>
-                <p className="text-xs text-meru-gray/80 mb-4">
-                  {t('sidebar.featuredDescription')}
-                </p>
-                <NavLink
-                  to="/order"
-                  onClick={closeSidebar}
-                  className="inline-block w-full text-center py-2.5 bg-gradient-to-r from-meru-red to-meru-amber text-meru-black rounded-lg text-sm font-bold hover:bg-gradient-to-l transition-all duration-300"
-                >
-                  {t('sidebar.orderNow')}
-                </NavLink>
-              </motion.div>
-            </motion.div>
-          </motion.div>
+        {isOpen ? (
+          <X className="h-6 w-6 text-white" />
+        ) : (
+          <Menu className="h-6 w-6 text-white" />
         )}
-      </motion.aside>
+      </motion.button>
 
-      {/* Main Content Wrapper */}
-      <div
-        className={`transition-margin duration-300 ${
-          isCollapsed ? 'mr-20' : 'mr-80'
-        }`}
-      >
-        {/* Your page content goes here */}
-      </div>
+      {/* Popup Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm">
+            {/* Popup Content */}
+            <motion.div
+              className="fixed bottom-24 right-8 w-80 max-h-[70vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+              variants={popupVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <div className="p-6 overflow-y-auto">
+                {/* Quick Links */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">
+                    {t('sidebar.quickLinks')}
+                  </h3>
+                  <ul className="space-y-2">
+                    {navLinks.map((link) => (
+                      <motion.li
+                        key={link.to}
+                        variants={itemVariants}
+                        whileHover="hover"
+                      >
+                        <NavLink
+                          to={link.to}
+                          onClick={closePopup}
+                          className={({ isActive }) =>
+                            `flex items-center gap-3 p-3 rounded-xl transition-colors ${
+                              isActive
+                                ? 'bg-meru-red/10 text-meru-red'
+                                : 'text-gray-600 hover:bg-gray-100'
+                            }`
+                          }
+                        >
+                          {link.icon}
+                          <span className="text-sm font-medium">{link.label}</span>
+                        </NavLink>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Recent Orders */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">
+                    {t('sidebar.recentOrders')}
+                  </h3>
+                  <ul className="space-y-3">
+                    {recentOrders.map((order) => (
+                      <motion.li
+                        key={order.id}
+                        variants={itemVariants}
+                        className="p-3 bg-gray-50 rounded-xl"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-meru-red/10 rounded-lg">
+                            <Package className="h-5 w-5 text-meru-red" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-800">{order.product}</p>
+                            <div className="flex items-center justify-between mt-2">
+                              <span className={`text-xs px-2 py-1 rounded-full ${
+                                order.status === 'Delivered' 
+                                  ? 'bg-green-100 text-green-600'
+                                  : 'bg-amber-100 text-amber-600'
+                              }`}>
+                                {order.status}
+                              </span>
+                              <span className="text-xs text-gray-500">{order.date}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Product Highlight */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">
+                    {t('sidebar.productHighlight')}
+                  </h3>
+                  <div className="group relative overflow-hidden rounded-xl bg-gray-100 p-4">
+                    <div className="aspect-square w-full mb-3 rounded-lg overflow-hidden">
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Soybean_oil_bottle.jpg"
+                        alt="Soy Oil"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-800 mb-1">
+                      {t('sidebar.featuredProduct')}
+                    </p>
+                    <p className="text-xs text-gray-600 mb-4">
+                      {t('sidebar.featuredDescription')}
+                    </p>
+                    <NavLink
+                      to="/order"
+                      onClick={closePopup}
+                      className="inline-block w-full text-center py-2.5 bg-meru-red text-white rounded-lg text-sm font-bold hover:bg-meru-amber transition-colors"
+                    >
+                      {t('sidebar.orderNow')}
+                    </NavLink>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
 
-export default Sidebar;
+export default FloatingSidebar;
