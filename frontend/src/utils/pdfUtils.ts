@@ -31,18 +31,18 @@ export const addOrderTable = (doc: jsPDF, orderDetails: FormData['orderDetails']
     startY,
     head: [[t('form.orderDetails')]],
     body: orderDetails.map((order) => [
-      order.orderCategory,
-      order.productName,
-      order.sku,
-      order.unitType,
-      order.quantity,
-      order.unitPrice,
-      order.discount,
-      (order.quantity * order.unitPrice * (1 - (order.discount || 0) / 100)).toFixed(2),
-      order.orderUrgency,
-      order.packagingPreference,
-      order.notes,
-      order.paymentSchedule,
+      order.orderCategory || '',
+      order.productName || '',
+      order.sku || '',
+      order.unitType || '',
+      order.quantity || 0,
+      order.unitPrice || 0,
+      order.discount || 0,
+      ((order.quantity || 0) * (order.unitPrice || 0) * (1 - (order.discount || 0) / 100)).toFixed(2),
+      order.orderUrgency || '',
+      order.packagingPreference || '',
+      order.notes || '',
+      order.paymentSchedule || '',
     ]),
     theme: 'striped',
     headStyles: { fillColor: [76, 175, 80] },
@@ -50,4 +50,65 @@ export const addOrderTable = (doc: jsPDF, orderDetails: FormData['orderDetails']
   return (doc as any).lastAutoTable.finalY;
 };
 
-// Similar functions for dispatch, salesOps, compliance, adminConfirmation
+export const addDispatchTable = (doc: jsPDF, dispatchDetails: FormData['dispatchDetails'], t: (key: string) => string, startY: number): number => {
+    autoTable(doc, {
+        startY,
+        head: [[t('form.dispatchDetails')]],
+        body: dispatchDetails.map((dispatch) => [
+            dispatch.dispatchDate || '',
+            dispatch.dispatchTime || '',
+            dispatch.vehicleNumber || '',
+            dispatch.driverName || '',
+            dispatch.contactNumber || '',
+            dispatch.notes || '',
+        ]),
+        theme: 'striped',
+        headStyles: { fillColor: [76, 175, 80] },
+    });
+    return (doc as any).lastAutoTable.finalY;
+};
+
+export const addSalesOpsTable = (doc: jsPDF, salesOpsDetails: FormData['salesOpsDetails'], t: (key: string) => string, startY: number): number => {
+    autoTable(doc, {
+        startY,
+        head: [[t('form.salesOpsDetails')]],
+        body: salesOpsDetails.map((salesOps) => [
+            salesOps.operationDate || '',
+            salesOps.operationType || '',
+            salesOps.notes || '',
+        ]),
+        theme: 'striped',
+        headStyles: { fillColor: [76, 175, 80] },
+    });
+    return (doc as any).lastAutoTable.finalY;
+};
+
+export const addComplianceTable = (doc: jsPDF, complianceDetails: FormData['complianceDetails'], t: (key: string) => string, startY: number): number => {
+    autoTable(doc, {
+        startY,
+        head: [[t('form.complianceDetails')]],
+        body: complianceDetails.map((compliance) => [
+            compliance.complianceType || '',
+            compliance.status || '',
+            compliance.notes || '',
+        ]),
+        theme: 'striped',
+        headStyles: { fillColor: [76, 175, 80] },
+    });
+    return (doc as any).lastAutoTable.finalY;
+};
+
+export const addAdminConfirmationTable = (doc: jsPDF, adminConfirmationDetails: FormData['adminConfirmationDetails'], t: (key: string) => string, startY: number): number => {
+    autoTable(doc, {
+        startY,
+        head: [[t('form.adminConfirmationDetails')]],
+        body: adminConfirmationDetails.map((adminConfirmation) => [
+            adminConfirmation.confirmationDate || '',
+            adminConfirmation.confirmedBy || '',
+            adminConfirmation.notes || '',
+        ]),
+        theme: 'striped',
+        headStyles: { fillColor: [76, 175, 80] },
+    });
+    return (doc as any).lastAutoTable.finalY;
+};

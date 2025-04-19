@@ -55,7 +55,7 @@ const OrderDetails: React.FC = () => {
               options={['Liters', 'Kilograms', 'Bottles', 'Bags']}
             />
             <Input name={`orderDetails.${index}.quantity`} label="form.quantity" type="number" />
-            <Input name={`orderDetails.${index}.unitPrice`} label="form.unitPrice" type="number" step="0.01" />
+            <Input name={`orderDetails.${index}.unitPrice`} label="form.unitPrice" type="number" />
             <Input name={`orderDetails.${index}.discount`} label="form.discount" type="number" />
             <div>
               <p className="text-sm font-medium text-gray-700">{t('form.subtotal')}</p>

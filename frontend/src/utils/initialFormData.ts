@@ -4,7 +4,7 @@ import { OrderEntry } from '../types/order';
 import { DispatchEntry } from '../types/dispatch';
 
 export const initialFormData: FormData = {
-  clientInfo: {
+    clientInfo: {
     fullName: '',
     phoneNumber: '',
     email: '',

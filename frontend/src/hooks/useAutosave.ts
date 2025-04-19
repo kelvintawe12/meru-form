@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useToast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { debounce } from 'lodash';
 import { FormData } from '../types/form';
@@ -9,7 +9,7 @@ export const useAutosave = (
   save: (data: FormData) => void
 ) => {
   const { t } = useTranslation();
-  const toast = useToast();
+  // Removed useToast as it's not exported from react-toastify
 
   useEffect(() => {
     const debouncedSave = debounce((data: FormData) => {
@@ -17,12 +17,14 @@ export const useAutosave = (
       toast.success(t('form.saved'));
     }, 30000);
 
-    const subscription = watch((data) => {
-      debouncedSave(data);
-    });
+    const subscription = watch();
+    if (subscription && typeof (subscription as any).onChange === 'function') {
+      (subscription as any).onChange((data: FormData) => {
+        debouncedSave(data);
+      });
+    }
 
     return () => {
-      subscription.unsubscribe();
       debouncedSave.cancel();
     };
   }, [watch, save, t, toast]);

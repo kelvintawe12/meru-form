@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const ClientPortal: React.FC = () => {
+const Help: React.FC = () => {
   const { t } = useTranslation();
   return (
     <div>
-      <h2>{t('nav.clientPortal')}</h2>
-      <p>Client Portal (Coming Soon)</p>
+      <h2>{t('nav.help')}</h2>
+      <p>Help Center (Coming Soon)</p>
     </div>
   );
 };
 
-export default ClientPortal;
+export default Help;

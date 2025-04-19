@@ -6,7 +6,7 @@ import Footer from './components/common/Footer';
 import Sidebar from './components/common/Sidebar';
 import Hero from './components/common/Hero';
 import OrderForm from './pages/OrderForm';
-import Home from './pages/Home';
+import Home from './components/common/Home';
 import ClientPortal from './pages/ClientPortal';
 import Help from './pages/Help';
 import Profile from './pages/Profile';
