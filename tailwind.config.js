@@ -1,8 +1,8 @@
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx,html}", // Include HTML in src/
-    "./src/components/**/*.{js,jsx,ts,tsx}", // Explicitly include components
-    "./src/components/common/**/*.{js,jsx,ts,tsx}", // Ensure common components
+    "./frontend/src/**/*.{js,jsx,ts,tsx,html}", // Include HTML in src/
+    "./frontend/src/components/**/*.{js,jsx,ts,tsx}", // Explicitly include components
+    "./frontend/src/components/common/**/*.{js,jsx,ts,tsx}", // Ensure common components
   ],
   theme: {
     extend: {
