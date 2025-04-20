@@ -33,14 +33,14 @@ const ClientInfo: React.FC = () => {
         name="clientInfo.fullName"
         label="form.fullName"
         placeholder="form.fullNamePlaceholder"
-        required
+
       />
       <Input
         name="clientInfo.phoneNumber"
         label="form.phoneNumber"
         placeholder="form.phoneNumberPlaceholder"
         type="tel"
-        required
+
       />
       <Input
         name="clientInfo.email"
@@ -68,7 +68,7 @@ const ClientInfo: React.FC = () => {
         label="form.dateOfRegistration"
         type="text"
         disabled
-        className="bg-gray-100 cursor-not-allowed"
+        style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}
       />
       <Input
         name="clientInfo.referredBy"

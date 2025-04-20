@@ -17,41 +17,19 @@ const Navbar: React.FC = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  // Animation variants
   const navbarVariants = {
     hidden: { y: -100, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
-    },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } },
   };
 
   const mobileMenuVariants = {
-    hidden: { 
-      height: 0,
-      opacity: 0,
-      transition: { 
-        duration: 0.4,
-        ease: 'easeInOut',
-        staggerChildren: 0.1,
-        when: "afterChildren"
-      }
-    },
-    visible: {
-      height: 'auto',
-      opacity: 1,
-      transition: {
-        duration: 0.4,
-        ease: 'easeInOut',
-        staggerChildren: 0.1
-      }
-    },
+    hidden: { height: 0, opacity: 0 },
+    visible: { height: 'auto', opacity: 1, transition: { duration: 0.4, ease: 'easeInOut', staggerChildren: 0.1 } },
   };
 
   const mobileLinkVariants = {
     hidden: { opacity: 0, y: -10 },
-    visible: { opacity: 1, y: 0 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
   };
 
   const navLinks = [
@@ -64,19 +42,16 @@ const Navbar: React.FC = () => {
 
   return (
     <motion.nav
-      className="bg-gradient-to-b from-slate-900 to-slate-800 shadow-xl sticky top-0 z-50 border-b border-slate-700/50"
+      className="bg-gradient-to-b from-gray-800 to-gray-700 shadow-lg sticky top-0 z-50 border-b border-gray-600/50"
       variants={navbarVariants}
       initial="hidden"
       animate="visible"
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center">
           {/* Logo/Brand */}
-          <NavLink
-            to="/"
-            className="group relative flex items-center gap-2"
-          >
-            <div className="text-2xl sm:text-3xl font-bold font-montserrat bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+          <NavLink to="/" className="group relative flex items-center gap-2">
+            <div className="text-3xl font-bold font-montserrat bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
               Mount Meru SoyCo
             </div>
             <motion.span
@@ -88,7 +63,7 @@ const Navbar: React.FC = () => {
           </NavLink>
 
           {/* Desktop Navigation and Controls */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-8">
             {/* Desktop Navigation Links */}
             <div className="hidden md:flex gap-6">
               {navLinks.map((link) => (
@@ -97,18 +72,16 @@ const Navbar: React.FC = () => {
                   to={link.to}
                   className={({ isActive }) =>
                     `group relative flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 ${
-                      isActive 
-                        ? 'bg-slate-700/30 backdrop-blur-sm'
-                        : 'hover:bg-slate-700/20'
+                      isActive ? 'bg-amber-400/20' : 'hover:bg-gray-600/20'
                     }`
                   }
                 >
                   {({ isActive }) => (
                     <>
-                      <span className={`transition-colors ${isActive ? 'text-amber-400' : 'text-slate-300 group-hover:text-amber-300'}`}>
+                      <span className={`transition-colors ${isActive ? 'text-amber-400' : 'text-gray-200 group-hover:text-amber-300'}`}>
                         {link.icon}
                       </span>
-                      <span className={`font-medium ${isActive ? 'text-amber-400' : 'text-slate-300 group-hover:text-white'}`}>
+                      <span className={`font-medium ${isActive ? 'text-amber-400' : 'text-gray-200 group-hover:text-white'}`}>
                         {link.label}
                       </span>
                       {isActive && (
@@ -124,18 +97,20 @@ const Navbar: React.FC = () => {
               ))}
             </div>
 
-            {/* Language Toggle - Now properly connected to i18n */}
+            {/* Language Toggle */}
             <motion.button
               onClick={toggleLanguage}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-br from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-slate-900 transition-all duration-300 group"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-br from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-gray-900 transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              animate={{ boxShadow: i18n.language === 'en' ? '0 0 10px rgba(251, 191, 36, 0.5)' : '0 0 10px rgba(255, 85, 0, 0.5)' }}
+              aria-label={t('nav.toggleLanguage')}
             >
               <motion.div
                 animate={{ rotate: i18n.language === 'en' ? 0 : 360 }}
                 transition={{ duration: 0.5 }}
               >
-                <Languages size={20} className="transition-transform group-hover:rotate-12" />
+                <Languages size={20} />
               </motion.div>
               <span className="font-semibold text-sm uppercase tracking-wide">
                 {i18n.language === 'en' ? 'EN' : 'RW'}
@@ -144,14 +119,11 @@ const Navbar: React.FC = () => {
 
             {/* Mobile Menu Toggle */}
             <button
-              className="md:hidden p-2 rounded-lg hover:bg-slate-700/30 transition-colors duration-300"
+              className="md:hidden p-2 rounded-lg hover:bg-gray-600/30 transition-colors duration-300"
               onClick={toggleMobileMenu}
+              aria-label={isMobileMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             >
-              {isMobileMenuOpen ? (
-                <X size={24} className="text-amber-400" />
-              ) : (
-                <Menu size={24} className="text-slate-300" />
-              )}
+              {isMobileMenuOpen ? <X size={24} className="text-amber-400" /> : <Menu size={24} className="text-gray-200" />}
             </button>
           </div>
         </div>
@@ -160,34 +132,30 @@ const Navbar: React.FC = () => {
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
-              className="md:hidden mt-4 bg-slate-800/50 backdrop-blur-sm rounded-xl overflow-hidden"
+              className="md:hidden mt-4 bg-gray-700/80 backdrop-blur-sm rounded-xl overflow-hidden p-4"
               variants={mobileMenuVariants}
               initial="hidden"
               animate="visible"
               exit="hidden"
             >
-              <motion.div className="flex flex-col gap-2 p-2">
+              <div className="flex flex-col gap-2">
                 {navLinks.map((link) => (
                   <motion.div key={link.to} variants={mobileLinkVariants}>
                     <NavLink
                       to={link.to}
                       className={({ isActive }) =>
                         `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                          isActive 
-                            ? 'bg-amber-400/10 text-amber-400'
-                            : 'text-slate-300 hover:bg-slate-700/30'
+                          isActive ? 'bg-amber-400/20 text-amber-400' : 'text-gray-200 hover:bg-gray-600/30'
                         }`
                       }
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <span className={i18n.language === 'en' ? 'text-amber-400' : 'text-slate-400'}>
-                        {link.icon}
-                      </span>
+                      <span className="text-gray-200">{link.icon}</span>
                       <span className="font-medium">{link.label}</span>
                     </NavLink>
                   </motion.div>
                 ))}
-              </motion.div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

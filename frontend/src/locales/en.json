@@ -240,7 +240,16 @@
     "tip2": "Hitamo uburyo bwo gutwara bufite isuku kandi bufite igiciro cyiza.",
     "tip3": "Premium abakiliya bafata 5% y’igabanyo kuri buri komanda.",
     "suggestions": "Ibyifuzo",
-    "suggestion1": "Gushyiraho gahunda y’ubwishyu bifasha kuyobora ibyo ushobora kwishyura."
+    "suggestion1": "Gushyiraho gahunda y’ubwishyu bifasha kuyobora ibyo ushobora kwishyura.",
+    "closeSidebar": "Close Sidebar",
+    "openSidebar": "Open Sidebar",
+    "menu": "Menu",
+    "quickLinks": "Quick Links",
+    "recentOrders": "Recent Orders",
+    "productHighlight": "Product Highlight",
+    "featuredProduct": "Premium Soy Oil",
+    "featuredDescription": "High-quality soy oil for your needs.",
+    "orderNow": "Order Now"
   },
   "chart": {
     "title": "Inshamake y’Umubare w’Ibicuruzwa"

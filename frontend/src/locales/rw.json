@@ -203,7 +203,16 @@
       "tip2": "Hitamo uburyo bwo gutwara bufite isuku kandi bufite igiciro cyiza.",
       "tip3": "Premium abakiliya bafata 5% y’igabanyo kuri buri komanda.",
       "suggestions": "Ibyifuzo",
-      "suggestion1": "Gushyiraho gahunda y’ubwishyu bifasha kuyobora ibyo ushobora kwishyura."
+      "suggestion1": "Gushyiraho gahunda y’ubwishyu bifasha kuyobora ibyo ushobora kwishyura.",
+      "closeSidebar": "Funga Umurongo",
+      "openSidebar": "Fungura Umurongo",
+      "menu": "Ibikubiyemo",
+      "quickLinks": "Amahuriro Yihuse",
+      "recentOrders": "Ibicuruzwa Bishya",
+      "productHighlight": "Igicuruzwa Cyihariye",
+      "featuredProduct": "Amavuta ya Soya y’Umwimerere",
+      "featuredDescription": "Amavuta ya soya y’ubuziranenge kubyifuzo byawe.",
+      "orderNow": "Tumiza Nonaha"
     },
     "chart": {
       "title": "Inshamake y’Umubare w’Ibicuruzwa"
