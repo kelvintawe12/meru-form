@@ -1,9 +1,10 @@
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import Modal from '../ui/Modal';
 import Input from '../common/Input';
+import Select from '../common/Select';
 import Button from '../common/Button';
+import { FormData } from '../../types/form';
 
 interface PaymentScheduleModalProps {
   isOpen: boolean;
@@ -13,30 +14,27 @@ interface PaymentScheduleModalProps {
 
 const PaymentScheduleModal: React.FC<PaymentScheduleModalProps> = ({ isOpen, onClose, index }) => {
   const { t } = useTranslation();
-  const { setValue } = useFormContext();
+  const { control, setValue } = useFormContext<FormData>();
 
-  const handleSave = () => {
-    // Example: Set payment schedule
-    setValue(`orderDetails.${index}.paymentSchedule`, 'Installments');
-    onClose();
-  };
+  if (!isOpen || index === null) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t('form.paymentSchedule')}>
-      <div className="space-y-4">
-        <Input name="installments" label="form.installments" type="number" />
-        <Input name="amountPerInstallment" label="form.amountPerInstallment" type="number" />
-        <Input name="firstPaymentDate" label="form.firstPaymentDate" type="date" />
-      </div>
-      <div className="mt-4 flex justify-end gap-2">
-        <Button variant="secondary" onClick={onClose}>
-          {t('form.cancel')}
-        </Button>
-        <Button variant="primary" onClick={handleSave}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg max-w-md w-full">
+        <h2 className="text-lg font-semibold mb-4">{t('form.setPaymentSchedule')}</h2>
+        <Select
+          name={`orderDetails.${index}.paymentSchedule`}
+          label="form.setPaymentSchedule"
+          options={['Full Payment', '30% Deposit', 'Installments']}
+        />
+        <Button variant="primary" onClick={onClose} className="mt-4">
           {t('form.save')}
         </Button>
+        <Button variant="secondary" onClick={onClose} className="mt-2">
+          {t('form.cancel')}
+        </Button>
       </div>
-    </Modal>
+    </div>
   );
 };
 

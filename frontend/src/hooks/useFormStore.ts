@@ -1,7 +1,20 @@
 import { create } from 'zustand';
-import { persist, StateStorage } from 'zustand/middleware';
-import { merge, isEqual } from 'lodash';
+import { persist } from 'zustand/middleware';
+import { merge } from 'lodash';
 import { FormData } from '../types/form';
+
+// Mock API utility
+const mockApiCall = <T>(data: T, delay: number = 1000, shouldFail: boolean = false): Promise<T> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (shouldFail) {
+        reject(new Error('Mock API: Failed to process request'));
+      } else {
+        resolve(data);
+      }
+    }, delay);
+  });
+};
 
 // Utility to update timestamps
 const updateTimestamps = <T extends FormData>(data: T): T => ({
@@ -9,13 +22,13 @@ const updateTimestamps = <T extends FormData>(data: T): T => ({
   updatedAt: new Date().toISOString(),
 });
 
-// Define initial form data (unchanged from your original)
+// Initial form data
 const initialFormData: FormData = {
   clientInfo: {
     fullName: '',
     phoneNumber: '',
     email: '',
-    gender: '',
+    gender: 'Prefer not to say',
     address: '',
     clientCategory: 'Farmer',
     dateOfRegistration: new Date().toISOString().split('T')[0],
@@ -23,10 +36,9 @@ const initialFormData: FormData = {
     preferredContactMethod: 'SMS',
     businessName: '',
     taxId: '',
-    loyaltyProgram: '',
+    loyaltyProgram: false,
     clientTier: 'Standard',
     accountManager: '',
-    clientPhoto: '',
   },
   orderDetails: [
     {
@@ -39,15 +51,15 @@ const initialFormData: FormData = {
       discount: 0,
       notes: '',
       orderUrgency: 'Standard',
-      packagingPreference: undefined,
-      paymentSchedule: undefined,
+      packagingPreference: 'Standard',
+      paymentSchedule: 'Full Payment',
     },
   ],
   dispatch: [],
   salesOps: {
     salesRepresentative: '',
     paymentStatus: 'Pending',
-    paymentMethod: undefined,
+    paymentMethod: 'Cash on Delivery',
     paymentReceived: 0,
     paymentReceipt: null,
     deliveryStatus: 'Processing',
@@ -60,14 +72,14 @@ const initialFormData: FormData = {
   },
   compliance: {
     exportLicense: '',
-    qualityCertification: undefined,
+    qualityCertification: 'None',
     customsDeclaration: '',
     complianceNotes: '',
     digitalSignature: '',
   },
   confirmation: {
     confirmedBy: '',
-    confirmationDate: '',
+    confirmationDate: new Date().toISOString().split('T')[0],
     confirmationStatus: 'Pending',
   },
   notes: {
@@ -82,6 +94,8 @@ const initialFormData: FormData = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   createdBy: 'User',
+  updatedBy: '',
+  clientId: '',
   dispatchDetails: [],
   salesOpsDetails: [],
   complianceDetails: [],
@@ -92,15 +106,13 @@ const initialFormData: FormData = {
 interface FormState {
   formData: FormData;
   history: FormData[];
-  future: FormData[]; // For redo functionality
+  future: FormData[];
   isSubmitting: boolean;
   lastError: string | null;
   setDraft: (data: FormData) => void;
-  loadDraft: () => FormData;
   updateDraft: (data: Partial<FormData>) => void;
   clearDraft: () => void;
-  clearSection: <K extends keyof FormData>(section: K) => void;
-  resetField: <K extends keyof FormData>(path: `${K}.${string}`) => void;
+  resetField: (path: string) => void;
   addAttachment: (file: File) => void;
   removeAttachment: (index: number) => void;
   setStatus: (status: FormData['status']) => void;
@@ -109,6 +121,7 @@ interface FormState {
   setSubmitting: (isSubmitting: boolean) => void;
   setError: (error: string | null) => void;
   saveDraftAsync: (data: FormData, signal?: AbortSignal) => Promise<void>;
+  submitFormAsync: (data: FormData, signal?: AbortSignal) => Promise<void>;
 }
 
 // Persisted state type for migration
@@ -118,75 +131,93 @@ interface PersistedFormState {
 }
 
 // Constants
-const HISTORY_LIMIT = 50; // Limit history to prevent memory bloat
+const HISTORY_LIMIT = 50;
+
+// Utility to reset a nested field by path
+const resetFieldByPath = (state: FormData, path: string): FormData => {
+  const parts = path.split('.');
+  if (parts.length === 1) {
+    const key = parts[0] as keyof FormData;
+    return {
+      ...state,
+      [key]: initialFormData[key],
+    };
+  }
+
+  const [section, ...rest] = parts;
+  const sectionKey = section as keyof FormData;
+  if (!(sectionKey in initialFormData)) return state;
+
+  if (sectionKey === 'clientInfo') {
+    const field = rest.join('.');
+    return {
+      ...state,
+      clientInfo: {
+        ...state.clientInfo,
+        [field]: initialFormData.clientInfo[field] || '',
+      },
+    };
+  }
+
+  if (sectionKey === 'dispatch' || sectionKey === 'orderDetails' || sectionKey === 'dispatchDetails' || sectionKey === 'salesOpsDetails' || sectionKey === 'complianceDetails' || sectionKey === 'adminConfirmationDetails') {
+    // Handle array fields (not resetting entire array)
+    return state;
+  }
+
+  const resetNested = (obj: any, path: string[], initObj: any): any => {
+    if (path.length === 1) {
+      return { ...obj, [path[0]]: initObj[path[0]] ?? '' };
+    }
+    const [current, ...next] = path;
+    return {
+      ...obj,
+      [current]: resetNested(obj[current], next, initObj[current]),
+    };
+  };
+
+  return {
+    ...state,
+    [sectionKey]: resetNested(state[sectionKey], rest, initialFormData[sectionKey]),
+  };
+};
 
 export const useFormStore = create<FormState>()(
   persist(
     (set, get) => ({
       formData: initialFormData,
       history: [],
-      future: [], // For redo functionality
+      future: [],
       isSubmitting: false,
       lastError: null,
 
-      // Save a new draft and add current state to history
       setDraft: (data) =>
         set((state) => ({
           formData: updateTimestamps(data),
           history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
-          future: [], // Clear future on new action
+          future: [],
         })),
 
-      // Retrieve current draft
-      loadDraft: () => get().formData,
-
-      // Update draft with partial data
       updateDraft: (data) =>
         set((state) => ({
           formData: updateTimestamps(merge({}, state.formData, data)),
           history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
-          future: [], // Clear future on new action
+          future: [],
         })),
 
-      // Reset to initial form data
       clearDraft: () =>
         set((state) => ({
           formData: updateTimestamps(initialFormData),
           history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
-          future: [], // Clear future on new action
+          future: [],
         })),
 
-      // Clear a specific section
-      clearSection: <K extends keyof FormData>(section: K) =>
+      resetField: (path) =>
         set((state) => ({
-          formData: updateTimestamps({
-            ...state.formData,
-            [section]: initialFormData[section],
-          }),
+          formData: updateTimestamps(resetFieldByPath(state.formData, path)),
           history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
-          future: [], // Clear future on new action
+          future: [],
         })),
 
-      // Reset a specific field
-      resetField: <K extends keyof FormData>(path: `${K}.${string}`) =>
-        set((state) => {
-          const [section, field] = path.split('.') as [K, string];
-          return {
-            formData: updateTimestamps({
-              ...state.formData,
-              [section]: {
-                ...(typeof state.formData[section] === 'object' && state.formData[section] !== null ? state.formData[section] : {}),
-                [field]: typeof initialFormData[section] === 'object' && initialFormData[section] !== null
-                  ? (initialFormData[section] as Record<string, unknown>)[field]
-                  : undefined,
-              },
-            }),
-            history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
-            future: [], // Clear future on new action
-          };
-        }),
-
-      // Add an attachment
       addAttachment: (file: File) =>
         set((state) => ({
           formData: updateTimestamps({
@@ -197,10 +228,9 @@ export const useFormStore = create<FormState>()(
             },
           }),
           history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
-          future: [], // Clear future on new action
+          future: [],
         })),
 
-      // Remove an attachment
       removeAttachment: (index: number) =>
         set((state) => ({
           formData: updateTimestamps({
@@ -211,10 +241,9 @@ export const useFormStore = create<FormState>()(
             },
           }),
           history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
-          future: [], // Clear future on new action
+          future: [],
         })),
 
-      // Update form status
       setStatus: (status) =>
         set((state) => ({
           formData: updateTimestamps({
@@ -222,10 +251,9 @@ export const useFormStore = create<FormState>()(
             status,
           }),
           history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
-          future: [], // Clear future on new action
+          future: [],
         })),
 
-      // Undo last action
       undo: () =>
         set((state) => {
           const lastState = state.history[state.history.length - 1];
@@ -237,7 +265,6 @@ export const useFormStore = create<FormState>()(
           };
         }),
 
-      // Redo undone action
       redo: () =>
         set((state) => {
           const nextState = state.future[state.future.length - 1];
@@ -249,30 +276,20 @@ export const useFormStore = create<FormState>()(
           };
         }),
 
-      // Set submitting status
       setSubmitting: (isSubmitting) => set({ isSubmitting }),
 
-      // Set error message
-      setError: (lastError) => set({ lastError }),
+      setError: (error) => set({ lastError: error }),
 
-      // Save draft asynchronously with cancellation support
       saveDraftAsync: async (data: FormData, signal?: AbortSignal) => {
         set({ isSubmitting: true, lastError: null });
         try {
-          // Mock API call (replace with your backend endpoint)
-          await new Promise((resolve, reject) => {
-            const timeout = setTimeout(resolve, 1000);
-            signal?.addEventListener('abort', () => {
-              clearTimeout(timeout);
-              reject(new DOMException('Operation cancelled', 'AbortError'));
-            });
-          });
+          await mockApiCall(data, 1000, Math.random() < 0.1);
           if (signal?.aborted) throw new DOMException('Operation cancelled', 'AbortError');
 
           set((state) => ({
             formData: updateTimestamps(data),
             history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
-            future: [], // Clear future on new action
+            future: [],
           }));
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to save draft';
@@ -282,6 +299,30 @@ export const useFormStore = create<FormState>()(
           set({ isSubmitting: false });
         }
       },
+
+      submitFormAsync: async (data: FormData, signal?: AbortSignal) => {
+              set({ isSubmitting: true, lastError: null });
+              try {
+                await mockApiCall(
+                  { id: generateAdminID(), ...data },
+                  1500,
+                  Math.random() < 0.05
+                );
+                if (signal?.aborted) throw new DOMException('Operation cancelled', 'AbortError');
+      
+                set((state) => ({
+                  formData: updateTimestamps({ ...data, status: 'Submitted' }),
+                  history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
+                  future: [],
+                }));
+              } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'Failed to submit form';
+                set({ lastError: errorMessage });
+                throw error;
+              } finally {
+                set({ isSubmitting: false });
+              }
+            },
     }),
     {
       name: 'mount-meru-soyco-form-storage',
@@ -303,3 +344,13 @@ export const useFormStore = create<FormState>()(
     }
   )
 );
+
+// Utility to generate admin ID
+const generateAdminID = (): string => {
+  const date = new Date();
+  return `MMS-${date.getFullYear()}${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}-${Math.floor(
+    Math.random() * 1000
+  ).toString().padStart(3, '0')}`;
+};

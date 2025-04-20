@@ -12,15 +12,20 @@ import { FormData } from '../../types/form';
 const SalesOps: React.FC = () => {
   const { t } = useTranslation();
   const { watch } = useFormContext<FormData>();
-  const paymentStatus = watch('salesOps.paymentStatus');
+  const paymentStatus = watch('salesOps.paymentStatus') || 'Pending';
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Input name="salesOps.salesRepresentative" label="form.salesRepresentative" />
+      <Input
+        name="salesOps.salesRepresentative"
+        label="form.salesRepresentative"
+        
+      />
       <Select
         name="salesOps.paymentStatus"
         label="form.paymentStatus"
         options={['Pending', 'Partial', 'Paid']}
+        
       />
       {['Partial', 'Paid'].includes(paymentStatus) && (
         <>
@@ -28,9 +33,18 @@ const SalesOps: React.FC = () => {
             name="salesOps.paymentMethod"
             label="form.paymentMethod"
             options={['Cash on Delivery', 'M-Pesa', 'Bank Transfer', 'Credit']}
+            
           />
-          <Input name="salesOps.paymentReceived" label="form.paymentReceived" type="number" />
-          <FileInput name="salesOps.paymentReceipt" label="form.paymentReceipt" accept="image/*,application/pdf" />
+          <Input
+            name="salesOps.paymentReceived"
+            label="form.paymentReceived"
+            type="number"
+          />
+          <FileInput
+            name="salesOps.paymentReceipt"
+            label="form.paymentReceipt"
+            accept="image/*,application/pdf"
+          />
         </>
       )}
       <Select
@@ -38,7 +52,10 @@ const SalesOps: React.FC = () => {
         label="form.deliveryStatus"
         options={['Processing', 'Dispatched', 'Delivered', 'Cancelled']}
       />
-      <DatePicker name="salesOps.preferredDeliveryDate" label="form.preferredDeliveryDate" />
+      <DatePicker
+        name="salesOps.preferredDeliveryDate"
+        label="form.preferredDeliveryDate"
+      />
       <Textarea name="salesOps.internalComments" label="form.internalComments" />
       <Select
         name="salesOps.orderPriority"

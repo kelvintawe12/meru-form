@@ -7,51 +7,116 @@ import Textarea from '../common/Textarea';
 import RadioGroup from '../common/RadioGroup';
 import Checkbox from '../common/Checkbox';
 import FileInput from '../common/FileInput';
-import { formatCustomerId } from '../../utils/formatters';
+import { FormData } from '../../types/form';
+
+// Mock formatCustomerId (replace with actual implementation)
+const formatCustomerId = (fullName: string, phoneNumber: string, date: Date): string => {
+  if (!fullName || !phoneNumber) return '';
+  const initials = fullName
+    .split(' ')
+    .map((n) => n[0])
+    .join('');
+  const dateStr = date.toISOString().split('T')[0].replace(/-/g, '');
+  return `${initials}-${phoneNumber.slice(-4)}-${dateStr}`;
+};
 
 const ClientInfo: React.FC = () => {
   const { t } = useTranslation();
-  const { watch } = useFormContext();
+  const { watch } = useFormContext<FormData>();
   const fullName = watch('clientInfo.fullName') || '';
   const phoneNumber = watch('clientInfo.phoneNumber') || '';
-  const customerId = formatCustomerId(fullName, phoneNumber, new Date());
+  const customerId = formatCustomerId(fullName, String(phoneNumber), new Date());
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Input name="clientInfo.fullName" label="form.fullName" placeholder="form.fullNamePlaceholder" />
-      <Input name="clientInfo.phoneNumber" label="form.phoneNumber" placeholder="form.phoneNumberPlaceholder" />
-      <Input name="clientInfo.email" label="form.email" placeholder="form.emailPlaceholder" type="email" />
+      <Input
+        name="clientInfo.fullName"
+        label="form.fullName"
+        placeholder="form.fullNamePlaceholder"
+        required
+      />
+      <Input
+        name="clientInfo.phoneNumber"
+        label="form.phoneNumber"
+        placeholder="form.phoneNumberPlaceholder"
+        type="tel"
+        required
+      />
+      <Input
+        name="clientInfo.email"
+        label="form.email"
+        placeholder="form.emailPlaceholder"
+        type="email"
+      />
       <Select
         name="clientInfo.gender"
         label="form.gender"
         options={['Male', 'Female', 'Other', 'Prefer not to say']}
       />
-      <Textarea name="clientInfo.address" label="form.address" placeholder="form.addressPlaceholder" />
+      <Textarea
+        name="clientInfo.address"
+        label="form.address"
+        placeholder="form.addressPlaceholder"
+      />
       <Select
         name="clientInfo.clientCategory"
         label="form.clientCategory"
         options={['Farmer', 'Distributor', 'Retailer', 'Partner', 'Individual Buyer']}
       />
-      <Input name="clientInfo.dateOfRegistration" label="form.dateOfRegistration" type="text" disabled />
-      <Input name="clientInfo.referredBy" label="form.referredBy" placeholder="form.referredByPlaceholder" />
+      <Input
+        name="clientInfo.dateOfRegistration"
+        label="form.dateOfRegistration"
+        type="text"
+        disabled
+        className="bg-gray-100 cursor-not-allowed"
+      />
+      <Input
+        name="clientInfo.referredBy"
+        label="form.referredBy"
+        placeholder="form.referredByPlaceholder"
+      />
       <RadioGroup
         name="clientInfo.preferredContactMethod"
         label="form.preferredContactMethod"
         options={['SMS', 'Call', 'Email']}
       />
-      <Input name="clientInfo.businessName" label="form.businessName" placeholder="form.businessNamePlaceholder" />
-      <Input name="clientInfo.taxId" label="form.taxId" placeholder="form.taxIdPlaceholder" />
-      <Checkbox name="clientInfo.loyaltyProgram" label="form.loyaltyProgram" />
+      <Input
+        name="clientInfo.businessName"
+        label="form.businessName"
+        placeholder="form.businessNamePlaceholder"
+      />
+      <Input
+        name="clientInfo.taxId"
+        label="form.taxId"
+        placeholder="form.taxIdPlaceholder"
+      />
+      <Checkbox
+        name="clientInfo.loyaltyProgram"
+        label="form.loyaltyProgram"
+        tooltip="form.loyaltyProgramTooltip"
+      />
       <Select
         name="clientInfo.clientTier"
         label="form.clientTier"
         options={['Standard', 'Premium', 'Enterprise']}
       />
-      <Input name="clientInfo.accountManager" label="form.accountManager" placeholder="form.accountManagerPlaceholder" />
-      <FileInput name="clientInfo.clientPhoto" label="form.clientPhoto" accept="image/jpeg,image/png" />
+      <Input
+        name="clientInfo.accountManager"
+        label="form.accountManager"
+        placeholder="form.accountManagerPlaceholder"
+      />
+      <FileInput
+        name="clientInfo.clientPhoto"
+        label="form.clientPhoto"
+        accept="image/jpeg,image/png"
+      />
       <div>
-        <p className="text-sm font-medium text-gray-700">{t('form.customerId')}</p>
-        <p className="mt-1 text-gray-900">{customerId || t('form.customerIdPending')}</p>
+        <label className="block text-sm font-medium text-gray-700">
+          {t('form.customerId')}
+        </label>
+        <p className="mt-1 text-gray-900">
+          {customerId || t('form.customerIdPending')}
+        </p>
       </div>
     </div>
   );
