@@ -1,34 +1,21 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { merge } from 'lodash';
+import { persist, StateStorage } from 'zustand/middleware';
+import { merge, isEqual } from 'lodash';
 import { FormData } from '../types/form';
 
-interface FormState {
-  formData: FormData;
-  history: FormData[];
-  isSubmitting: boolean;
-  lastError: string | null;
-  setDraft: (data: FormData) => void;
-  loadDraft: () => FormData;
-  updateDraft: (data: Partial<FormData>) => void;
-  clearDraft: () => void;
-  clearSection: <K extends keyof FormData>(section: K) => void;
-  resetField: <K extends keyof FormData>(path: `${K}.${Extract<keyof FormData[K], string>}`) => void;
-  addAttachment: (file: File) => void;
-  removeAttachment: (index: number) => void;
-  setStatus: (status: FormData['status']) => void;
-  undo: () => void;
-  setSubmitting: (isSubmitting: boolean) => void;
-  setError: (error: string | null) => void;
-  saveDraftAsync: (data: FormData) => Promise<void>;
-}
+// Utility to update timestamps
+const updateTimestamps = <T extends FormData>(data: T): T => ({
+  ...data,
+  updatedAt: new Date().toISOString(),
+});
 
+// Define initial form data (unchanged from your original)
 const initialFormData: FormData = {
   clientInfo: {
     fullName: '',
     phoneNumber: '',
     email: '',
-    gender: undefined,
+    gender: '',
     address: '',
     clientCategory: 'Farmer',
     dateOfRegistration: new Date().toISOString().split('T')[0],
@@ -36,10 +23,10 @@ const initialFormData: FormData = {
     preferredContactMethod: 'SMS',
     businessName: '',
     taxId: '',
-    loyaltyProgram: false,
+    loyaltyProgram: '',
     clientTier: 'Standard',
     accountManager: '',
-    clientPhoto: null,
+    clientPhoto: '',
   },
   orderDetails: [
     {
@@ -97,91 +84,142 @@ const initialFormData: FormData = {
   createdBy: 'User',
 };
 
+// Interface for the Zustand store
+interface FormState {
+  formData: FormData;
+  history: FormData[];
+  future: FormData[]; // For redo functionality
+  isSubmitting: boolean;
+  lastError: string | null;
+  setDraft: (data: FormData) => void;
+  loadDraft: () => FormData;
+  updateDraft: (data: Partial<FormData>) => void;
+  clearDraft: () => void;
+  clearSection: <K extends keyof FormData>(section: K) => void;
+  resetField: <K extends keyof FormData>(path: `${K}.${string}`) => void;
+  addAttachment: (file: File) => void;
+  removeAttachment: (index: number) => void;
+  setStatus: (status: FormData['status']) => void;
+  undo: () => void;
+  redo: () => void;
+  setSubmitting: (isSubmitting: boolean) => void;
+  setError: (error: string | null) => void;
+  saveDraftAsync: (data: FormData, signal?: AbortSignal) => Promise<void>;
+}
+
+// Persisted state type for migration
+interface PersistedFormState {
+  formData: FormData;
+  history: FormData[];
+}
+
+// Constants
+const HISTORY_LIMIT = 50; // Limit history to prevent memory bloat
+
 export const useFormStore = create<FormState>()(
   persist(
     (set, get) => ({
       formData: initialFormData,
       history: [],
+      future: [], // For redo functionality
       isSubmitting: false,
       lastError: null,
+
+      // Save a new draft and add current state to history
       setDraft: (data) =>
         set((state) => ({
-          formData: { ...data, updatedAt: new Date().toISOString() },
-          history: [...state.history, state.formData],
+          formData: updateTimestamps(data),
+          history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
+          future: [], // Clear future on new action
         })),
+
+      // Retrieve current draft
       loadDraft: () => get().formData,
+
+      // Update draft with partial data
       updateDraft: (data) =>
         set((state) => ({
-          formData: merge({}, state.formData, {
-            ...data,
-            updatedAt: new Date().toISOString(),
-          }),
+          formData: updateTimestamps(merge({}, state.formData, data)),
+          history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
+          future: [], // Clear future on new action
         })),
+
+      // Reset to initial form data
       clearDraft: () =>
         set((state) => ({
-          history: [...state.history, state.formData],
-          formData: {
-            ...initialFormData,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
+          formData: updateTimestamps(initialFormData),
+          history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
+          future: [], // Clear future on new action
         })),
+
+      // Clear a specific section
       clearSection: <K extends keyof FormData>(section: K) =>
         set((state) => ({
-          history: [...state.history, state.formData],
-          formData: {
+          formData: updateTimestamps({
             ...state.formData,
             [section]: initialFormData[section],
-            updatedAt: new Date().toISOString(),
-          },
+          }),
+          history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
+          future: [], // Clear future on new action
         })),
-      resetField: <K extends keyof FormData>(path: `${K}.${Extract<keyof FormData[K], string>}`) =>
+
+      // Reset a specific field
+      resetField: <K extends keyof FormData>(path: `${K}.${string}`) =>
         set((state) => {
-          const [section, field] = path.split('.') as [K, keyof FormData[K]];
+          const [section, field] = path.split('.') as [K, string];
           return {
-            history: [...state.history, state.formData],
-            formData: {
+            formData: updateTimestamps({
               ...state.formData,
               [section]: {
-                ...(typeof state.formData[section] === 'object' && state.formData[section] !== null ? state.formData[section] : {}),
-                [field]: initialFormData[section] && typeof initialFormData[section] === 'object' 
-                  ? (initialFormData[section] as Record<string, unknown>)[field] 
-                  : undefined,
+                ...state.formData[section],
+                [field]: initialFormData[section][field as keyof FormData[K]],
               },
-              updatedAt: new Date().toISOString(),
-            },
+            }),
+            history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
+            future: [], // Clear future on new action
           };
         }),
+
+      // Add an attachment
       addAttachment: (file: File) =>
         set((state) => ({
-          formData: {
+          formData: updateTimestamps({
             ...state.formData,
             attachments: {
               attachment: [...state.formData.attachments.attachment, file],
               attachmentName: [...state.formData.attachments.attachmentName, file.name],
             },
-            updatedAt: new Date().toISOString(),
-          },
+          }),
+          history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
+          future: [], // Clear future on new action
         })),
+
+      // Remove an attachment
       removeAttachment: (index: number) =>
         set((state) => ({
-          formData: {
+          formData: updateTimestamps({
             ...state.formData,
             attachments: {
               attachment: state.formData.attachments.attachment.filter((_, i) => i !== index),
               attachmentName: state.formData.attachments.attachmentName.filter((_, i) => i !== index),
             },
-            updatedAt: new Date().toISOString(),
-          },
+          }),
+          history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
+          future: [], // Clear future on new action
         })),
+
+      // Update form status
       setStatus: (status) =>
         set((state) => ({
-          formData: {
+          formData: updateTimestamps({
             ...state.formData,
             status,
-            updatedAt: new Date().toISOString(),
-          },
+          }),
+          history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
+          future: [], // Clear future on new action
         })),
+
+      // Undo last action
       undo: () =>
         set((state) => {
           const lastState = state.history[state.history.length - 1];
@@ -189,22 +227,50 @@ export const useFormStore = create<FormState>()(
           return {
             formData: lastState,
             history: state.history.slice(0, -1),
+            future: [...state.future, state.formData],
           };
         }),
+
+      // Redo undone action
+      redo: () =>
+        set((state) => {
+          const nextState = state.future[state.future.length - 1];
+          if (!nextState) return state;
+          return {
+            formData: nextState,
+            history: [...state.history, state.formData],
+            future: state.future.slice(0, -1),
+          };
+        }),
+
+      // Set submitting status
       setSubmitting: (isSubmitting) => set({ isSubmitting }),
+
+      // Set error message
       setError: (lastError) => set({ lastError }),
-      saveDraftAsync: async (data: FormData) => {
+
+      // Save draft asynchronously with cancellation support
+      saveDraftAsync: async (data: FormData, signal?: AbortSignal) => {
         set({ isSubmitting: true, lastError: null });
         try {
           // Mock API call (replace with your backend endpoint)
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          // Example: await fetch('/api/draft', { method: 'POST', body: JSON.stringify(data) });
+          await new Promise((resolve, reject) => {
+            const timeout = setTimeout(resolve, 1000);
+            signal?.addEventListener('abort', () => {
+              clearTimeout(timeout);
+              reject(new DOMException('Operation cancelled', 'AbortError'));
+            });
+          });
+          if (signal?.aborted) throw new DOMException('Operation cancelled', 'AbortError');
+
           set((state) => ({
-            formData: { ...data, updatedAt: new Date().toISOString() },
-            history: [...state.history, state.formData],
+            formData: updateTimestamps(data),
+            history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
+            future: [], // Clear future on new action
           }));
         } catch (error) {
-          set({ lastError: 'Failed to save draft' });
+          const errorMessage = error instanceof Error ? error.message : 'Failed to save draft';
+          set({ lastError: errorMessage });
           throw error;
         } finally {
           set({ isSubmitting: false });
@@ -218,12 +284,11 @@ export const useFormStore = create<FormState>()(
         history: state.history,
       }),
       version: 1,
-      migrate: (persistedState: unknown, version: number) => {
-        const state = persistedState as Partial<FormState>;
+      migrate: (persistedState: PersistedFormState, version: number) => {
         if (version < 1) {
           return {
-            formData: merge({}, initialFormData, state.formData),
-            history: (state.history || []).map((item) => merge({}, initialFormData, item)),
+            formData: merge({}, initialFormData, persistedState.formData),
+            history: (persistedState.history || []).map((item) => merge({}, initialFormData, item)),
           };
         }
         return persistedState as FormState;

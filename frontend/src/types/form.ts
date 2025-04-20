@@ -125,7 +125,29 @@ export interface FormData {
         packagingPreference?: string;
         notes?: string;
         paymentSchedule?: string;
+        share
     }>;
+    dispatch: Array<{
+      dispatchId: string;
+      dispatchDate: string;
+      dispatchStatus: string;
+      dispatchTime: string;
+      vehicleNumber: string;
+      driverName: string;
+      contactNumber: string;
+      notes: string;
+    }>;
+    salesOps: SalesOps;
+    compliance: Compliance;
+    confirmation: Confirmation;
+    notes: Notes;
+    attachments: Attachments;
+    status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
+    createdAt: string;
+    updatedAt: string;
+    createdBy: string;
+    updatedBy?: string;
+    clientId?: string;
     dispatchDetails: DispatchDetail[];
     salesOpsDetails: SalesOpsDetail[];
     complianceDetails: ComplianceDetail[];
