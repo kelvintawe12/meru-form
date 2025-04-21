@@ -1,30 +1,69 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { LucideIcon } from 'lucide-react';
+import { motion, HTMLMotionProps } from 'framer-motion';
+import { cn } from '../../utils/cn';
 
-interface CheckboxProps {
-  name: string;
-  label: string;
-}
+// Define ButtonProps type, extending Framer Motion's HTMLMotionProps for compatibility
+type ButtonProps = HTMLMotionProps<'button'> & {
+  variant?: 'primary' | 'secondary' | 'danger';
+  icon?: LucideIcon;
+  iconPosition?: 'left' | 'right';
+  className?: string;
+  loading?: boolean;
+};
 
-const Checkbox: React.FC<CheckboxProps> = ({ name, label }) => {
-  const { t } = useTranslation();
-  const { register, formState: { errors } } = useFormContext();
-  const error = errors[name]?.message as string;
+// Button component
+const Button: React.FC<ButtonProps> = ({
+  variant = 'primary',
+  icon: Icon,
+  iconPosition = 'left',
+  children,
+  className = '',
+  loading = false,
+  disabled,
+  ...props
+}) => {
+  const baseClass = 'px-4 py-2 rounded font-semibold focus:outline-none flex items-center justify-center gap-2';
+  const variantClass = {
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400',
+    secondary: 'bg-gray-300 text-gray-800 hover:bg-gray-400 disabled:bg-gray-200',
+    danger: 'bg-red-600 text-white hover:bg-red-700 disabled:bg-red-400',
+  };
 
   return (
-    <div className="mb-4">
-      <label className="flex items-center">
-        <input
-          type="checkbox"
-          {...register(name)}
-          className="mr-2"
-        />
-        {t(label)}
-      </label>
-      {error && <p className="mt-1 text-sm text-red-600">{t(error)}</p>}
-    </div>
+    <motion.button
+      className={cn(baseClass, variantClass[variant], className, {
+        'opacity-50 cursor-not-allowed': disabled || loading,
+      })}
+      disabled={disabled || loading}
+      whileHover={{ scale: disabled || loading ? 1 : 1.05 }}
+      whileTap={{ scale: disabled || loading ? 1 : 0.95 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      {...props}
+    >
+      {loading && (
+        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+            fill="none"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          />
+        </svg>
+      )}
+      {Icon && iconPosition === 'left' && <Icon className="h-4 w-4" />}
+      {children as React.ReactNode}
+      {Icon && iconPosition === 'right' && <Icon className="h-4 w-4" />}
+    </motion.button>
   );
 };
 
-export default Checkbox;
+export default Button;

@@ -1,9 +1,10 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 import { cn } from '../../utils/cn';
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+// Define ButtonProps type, extending Framer Motion's HTMLMotionProps for better compatibility
+type ButtonProps = HTMLMotionProps<'button'> & {
   variant?: 'primary' | 'secondary' | 'danger';
   icon?: LucideIcon;
   iconPosition?: 'left' | 'right';
@@ -11,6 +12,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
 };
 
+// Button component
 const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   icon: Icon,
@@ -37,11 +39,19 @@ const Button: React.FC<ButtonProps> = ({
       whileHover={{ scale: disabled || loading ? 1 : 1.05 }}
       whileTap={{ scale: disabled || loading ? 1 : 0.95 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      {...(props as React.HTMLAttributes<HTMLButtonElement>)}
+      {...props}
     >
       {loading && (
         <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+            fill="none"
+          />
           <path
             className="opacity-75"
             fill="currentColor"
@@ -50,7 +60,7 @@ const Button: React.FC<ButtonProps> = ({
         </svg>
       )}
       {Icon && iconPosition === 'left' && <Icon className="h-4 w-4" />}
-      {children}
+      {children as React.ReactNode}
       {Icon && iconPosition === 'right' && <Icon className="h-4 w-4" />}
     </motion.button>
   );

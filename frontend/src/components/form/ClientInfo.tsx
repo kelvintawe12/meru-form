@@ -1,4 +1,3 @@
-// src/components/form/ClientInfo.tsx
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -30,38 +29,35 @@ const ClientInfo: React.FC = () => {
 
   const fullName = watch('clientInfo.fullName') || '';
   const phoneNumber = watch('clientInfo.phoneNumber') || '';
-  const customerId = formatCustomerId(fullName, phoneNumber, new Date());
+  const customerId = formatCustomerId(fullName, String(phoneNumber), new Date());
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 no-flicker">
       <div>
         <Input
-          name="clientInfo.fullName"
           label={t('form.fullName')}
           placeholder={t('form.fullNamePlaceholder')}
-          register={register}
+          {...register('clientInfo.fullName')}
           required
           error={errors.clientInfo?.fullName?.message}
         />
       </div>
       <div>
         <Input
-          name="clientInfo.phoneNumber"
           label={t('form.phoneNumber')}
           placeholder={t('form.phoneNumberPlaceholder')}
           type="tel"
-          register={register}
+          {...register('clientInfo.phoneNumber')}
           required
           error={errors.clientInfo?.phoneNumber?.message}
         />
       </div>
       <div>
         <Input
-          name="clientInfo.email"
           label={t('form.email')}
           placeholder={t('form.emailPlaceholder')}
           type="email"
-          register={register}
+          {...register('clientInfo.email')}
           error={errors.clientInfo?.email?.message}
         />
       </div>
@@ -70,7 +66,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.gender"
           label={t('form.gender')}
           options={['Male', 'Female', 'Other', 'Prefer not to say']}
-          register={register}
           error={errors.clientInfo?.gender?.message}
         />
       </div>
@@ -79,7 +74,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.address"
           label={t('form.address')}
           placeholder={t('form.addressPlaceholder')}
-          register={register}
           error={errors.clientInfo?.address?.message}
         />
       </div>
@@ -88,7 +82,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.clientCategory"
           label={t('form.clientCategory')}
           options={['Farmer', 'Distributor', 'Retailer', 'Partner', 'Individual Buyer']}
-          register={register}
           required
           error={errors.clientInfo?.clientCategory?.message}
         />
@@ -99,7 +92,6 @@ const ClientInfo: React.FC = () => {
           label={t('form.dateOfRegistration')}
           type="text"
           disabled
-          register={register}
           className="bg-gray-100 cursor-not-allowed"
         />
       </div>
@@ -108,7 +100,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.referredBy"
           label={t('form.referredBy')}
           placeholder={t('form.referredByPlaceholder')}
-          register={register}
           error={errors.clientInfo?.referredBy?.message}
         />
       </div>
@@ -117,7 +108,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.preferredContactMethod"
           label={t('form.preferredContactMethod')}
           options={['SMS', 'Call', 'Email']}
-          register={register}
           error={errors.clientInfo?.preferredContactMethod?.message}
         />
       </div>
@@ -126,7 +116,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.businessName"
           label={t('form.businessName')}
           placeholder={t('form.businessNamePlaceholder')}
-          register={register}
           error={errors.clientInfo?.businessName?.message}
         />
       </div>
@@ -135,7 +124,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.taxId"
           label={t('form.taxId')}
           placeholder={t('form.taxIdPlaceholder')}
-          register={register}
           error={errors.clientInfo?.taxId?.message}
         />
       </div>
@@ -144,7 +132,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.loyaltyProgram"
           label={t('form.loyaltyProgram')}
           tooltip={t('form.loyaltyProgramTooltip')}
-          register={register}
           error={errors.clientInfo?.loyaltyProgram?.message}
         />
       </div>
@@ -153,7 +140,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.clientTier"
           label={t('form.clientTier')}
           options={['Standard', 'Premium', 'Enterprise']}
-          register={register}
           error={errors.clientInfo?.clientTier?.message}
         />
       </div>
@@ -162,7 +148,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.accountManager"
           label={t('form.accountManager')}
           placeholder={t('form.accountManagerPlaceholder')}
-          register={register}
           error={errors.clientInfo?.accountManager?.message}
         />
       </div>
@@ -171,7 +156,6 @@ const ClientInfo: React.FC = () => {
           name="clientInfo.clientPhoto"
           label={t('form.clientPhoto')}
           accept="image/jpeg,image/png"
-          register={register}
           error={errors.clientInfo?.clientPhoto?.message}
         />
       </div>

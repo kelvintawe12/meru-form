@@ -64,7 +64,9 @@ const OrderForm: React.FC = () => {
           ? value.orderDetails.filter((detail) => detail !== undefined) as OrderEntry[]
           : undefined,
         dispatch: value.dispatch
-          ? value.dispatch.filter((entry) => entry !== undefined) as DispatchEntry[]
+          ? Array.isArray(value.dispatch) 
+            ? value.dispatch.filter((entry) => entry !== undefined) as DispatchEntry[] 
+            : undefined
           : undefined,
       };
       debouncedUpdateDraft(sanitizedValue);

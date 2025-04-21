@@ -134,7 +134,23 @@ export interface Attachments {
 }
 
 export interface FormData {
-  clientInfo: { [key: string]: string | number };
+  clientInfo: {
+    fullName: string;
+    phoneNumber: string;
+    email?: string;
+    gender?: 'Male' | 'Female' | 'Other' | 'Prefer not to say';
+    address?: string;
+    clientCategory: 'Farmer' | 'Distributor' | 'Retailer' | 'Partner' | 'Individual Buyer';
+    dateOfRegistration?: string;
+    referredBy?: string;
+    preferredContactMethod?: 'SMS' | 'Call' | 'Email';
+    businessName?: string;
+    taxId?: string;
+    loyaltyProgram?: boolean;
+    clientTier?: 'Standard' | 'Premium' | 'Enterprise';
+    accountManager?: string;
+    clientPhoto?: File | null;
+  };
   orderDetails: OrderEntry[];
   dispatch: DispatchEntry[];
   salesOps: SalesOps;
