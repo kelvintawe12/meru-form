@@ -25,14 +25,14 @@ const ReviewSubmit: React.FC = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const pdfBlob = await generatePDF(data, `MountMeruSoyCo_${customerId}.pdf`);
-      if (!pdfBlob) {
+      const pdfResult = await generatePDF(data, `MountMeruSoyCo_${customerId}.pdf`);
+      if (!pdfResult || !pdfResult.blob) {
         toast.error(t('form.pdfError'));
         return;
       }
 
       // Download PDF
-      const url = URL.createObjectURL(pdfBlob);
+      const url = URL.createObjectURL(pdfResult.blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `MountMeruSoyCo_${customerId}.pdf`;
@@ -41,7 +41,7 @@ const ReviewSubmit: React.FC = () => {
 
       // Share via WhatsApp if shareWithManager is checked
       if (data.shareWithManager && data.clientInfo.accountManager) {
-        shareViaWhatsApp(pdfBlob, data.clientInfo.accountManager, t('form.managerShareMessage'));
+        shareViaWhatsApp(pdfResult, data.clientInfo.accountManager);
       }
 
       // TODO: Implement emailPDF logic (e.g., send PDF via API)

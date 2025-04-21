@@ -3,20 +3,28 @@ import { z } from 'zod';
 
 export const formSchema = z.object({
   clientInfo: z.object({
+    // fullName: z.string(),
+    // phoneNumber: z.string(),
+    // address: z.string(),
+    clientCategory: z.enum(['farmer', 'distributor', 'retailer', 'partner', 'individualBuyer']).optional(),
+    clientTier: z.enum(['standard', 'premium', 'enterprise']).optional(),
+    accountManager: z.string().optional(),
+    clientId: z.string(),
+    updatedBy: z.string(),
     fullName: z.string().min(1, { message: 'form.fullNameRequired' }),
     phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, { message: 'form.phoneNumberInvalid' }),
     email: z.string().email({ message: 'form.emailInvalid' }).optional().or(z.literal('')),
     gender: z.enum(['male', 'female', 'other', 'preferNotToSay']).optional(),
     address: z.string().min(1, { message: 'form.addressRequired' }),
-    clientCategory: z.enum(['farmer', 'distributor', 'retailer', 'partner', 'individualBuyer']).optional(),
+    // clientCategory: z.enum(['farmer', 'distributor', 'retailer', 'partner', 'individualBuyer']).optional(),
     dateOfRegistration: z.string().optional(),
     referredBy: z.string().optional(),
     preferredContactMethod: z.enum(['sms', 'call', 'email', 'whatsapp']).optional(),
     businessName: z.string().optional(),
     taxId: z.string().optional(),
     loyaltyProgram: z.boolean().optional(),
-    clientTier: z.enum(['standard', 'premium', 'enterprise']).optional(),
-    accountManager: z.string().optional(),
+    // clientTier: z.enum(['standard', 'premium', 'enterprise']).optional(),
+    // accountManager: z.string().optional(),
   }),
   orderDetails: z.array(
     z.object({

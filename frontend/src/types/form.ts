@@ -7,6 +7,14 @@ export interface ClientInfo {
   address: string;
   clientCategory?: 'farmer' | 'distributor' | 'retailer' | 'partner' | 'individualBuyer';
   clientPhoto?: File | null;
+  clientId: string;
+  clientStatus?: string;
+  clientCreatedAt?: string;
+  clientUpdatedAt?: string;
+  clientCreatedBy?: string;
+  clientUpdatedBy?: string;
+  clientAttachments?: string[];
+  updatedBy: string; 
   dateOfRegistration?: string;
   referredBy?: string;
   preferredContactMethod?: 'sms' | 'call' | 'email' | 'whatsapp';
@@ -115,12 +123,14 @@ export interface FormData {
   clientGender?: string;
   clientDateOfRegistration?: string;
   clientNotes?: string;
+  // clientId: string;
   clientAttachments?: string[];
   clientStatus?: string;
   clientCreatedAt?: string;
   clientUpdatedAt?: string;
   clientCreatedBy?: string;
-
+  shareWithManager?: boolean;
+  emailPDF?: boolean;
   shippingDetails?: any[];
   // Removed duplicate and conflicting declaration of orderDetails
   orderStatus?: string;

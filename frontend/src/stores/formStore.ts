@@ -12,6 +12,8 @@ const updateTimestamps = <T extends FormData>(data: T): T => ({
 // Define initial form data (unchanged from your original)
 const initialFormData: FormData = {
   clientInfo: {
+    clientId: '', // Add clientId with an initial value
+    updatedBy: '', // Add updatedBy with an initial value
     fullName: '',
     phoneNumber: '',
     email: '',
@@ -26,19 +28,19 @@ const initialFormData: FormData = {
     loyaltyProgram: undefined,
     clientTier: 'standard',
     accountManager: '',
-    clientPhoto: '',
+    clientPhoto: null,
   },
   orderDetails: [
     {
       orderCategory: 'retail',
       productName: 'Soy Oil',
       sku: `SOY-${Math.random().toString(36).slice(2, 7)}`,
-      unitType: 'Liters',
+      unitType: 'liters',
       quantity: 1,
       unitPrice: 0,
       discount: 0,
       notes: '',
-      orderUrgency: 'Standard',
+      orderUrgency: 'standard',
       packagingPreference: undefined,
       paymentSchedule: undefined,
     },
@@ -46,15 +48,15 @@ const initialFormData: FormData = {
   dispatch: [],
   salesOps: {
     salesRepresentative: '',
-    paymentStatus: 'Pending',
+    paymentStatus: 'pending',
     paymentMethod: undefined,
     paymentReceived: 0,
     paymentReceipt: null,
-    deliveryStatus: 'Processing',
+    deliveryStatus: 'processing',
     preferredDeliveryDate: '',
     internalComments: '',
-    orderPriority: 'Low',
-    salesChannel: 'Online',
+    orderPriority: 'low',
+    salesChannel: 'online',
     crmSync: false,
     invoiceNumber: '',
   },
@@ -68,7 +70,7 @@ const initialFormData: FormData = {
   confirmation: {
     confirmedBy: '',
     confirmationDate: '',
-    confirmationStatus: 'Pending',
+    confirmationStatus: 'pending',
   },
   notes: {
     internalNotes: '',
@@ -78,7 +80,7 @@ const initialFormData: FormData = {
     attachment: [],
     attachmentName: [],
   },
-  status: 'Draft',
+  status: 'draft',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   createdBy: 'User',
@@ -192,8 +194,8 @@ export const useFormStore = create<FormState>()(
           formData: updateTimestamps({
             ...state.formData,
             attachments: {
-              attachment: [...state.formData.attachments.attachment, file],
-              attachmentName: [...state.formData.attachments.attachmentName, file.name],
+              attachment: [...(state.formData.attachments?.attachment ?? []), file],
+              attachmentName: [...(state.formData.attachments?.attachmentName ?? []), file.name],
             },
           }),
           history: [...state.history.slice(-HISTORY_LIMIT), state.formData],
@@ -206,8 +208,8 @@ export const useFormStore = create<FormState>()(
           formData: updateTimestamps({
             ...state.formData,
             attachments: {
-              attachment: state.formData.attachments.attachment.filter((_, i) => i !== index),
-              attachmentName: state.formData.attachments.attachmentName.filter((_, i) => i !== index),
+              attachment: state.formData.attachments?.attachment?.filter((_, i) => i !== index) ?? [],
+              attachmentName: (state.formData.attachments?.attachmentName ?? []).filter((_, i) => i !== index),
             },
           }),
           history: [...state.history.slice(-HISTORY_LIMIT), state.formData],

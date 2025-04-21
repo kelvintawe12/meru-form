@@ -5,7 +5,16 @@ import { useTranslation } from 'react-i18next';
 
 const ClientInfo: React.FC = () => {
   const { t } = useTranslation('translation');
-  const { register, formState: { errors } } = useFormContext();
+  interface ClientInfoFormData {
+    clientInfo: {
+      fullName: string;
+      phoneNumber: string;
+      email: string;
+      clientCategory: string;
+    };
+  }
+  
+  const { register, formState: { errors } } = useFormContext<ClientInfoFormData>();
 
   return (
     <div className="space-y-4">
@@ -20,7 +29,7 @@ const ClientInfo: React.FC = () => {
             aria-invalid={!!errors.clientInfo?.fullName}
           />
           {errors.clientInfo?.fullName && (
-            <p className="text-red-600 text-sm">{t(errors.clientInfo.fullName.message)}</p>
+            <p className="text-red-600 text-sm">{t(errors.clientInfo.fullName?.message || 'form.error.default')}</p>
           )}
         </div>
         <div>
@@ -32,7 +41,7 @@ const ClientInfo: React.FC = () => {
             aria-invalid={!!errors.clientInfo?.phoneNumber}
           />
           {errors.clientInfo?.phoneNumber && (
-            <p className="text-red-600 text-sm">{t(errors.clientInfo.phoneNumber.message)}</p>
+            <p className="text-red-600 text-sm">{t(errors.clientInfo.phoneNumber?.message || 'form.error.default')}</p>
           )}
         </div>
         <div>
@@ -44,7 +53,7 @@ const ClientInfo: React.FC = () => {
             aria-invalid={!!errors.clientInfo?.email}
           />
           {errors.clientInfo?.email && (
-            <p className="text-red-600 text-sm">{t(errors.clientInfo.email.message)}</p>
+            <p className="text-red-600 text-sm">{t(errors.clientInfo.email?.message || 'form.error.default')}</p>
           )}
         </div>
         <div>
@@ -62,7 +71,7 @@ const ClientInfo: React.FC = () => {
             ))}
           </select>
           {errors.clientInfo?.clientCategory && (
-            <p className="text-red-600 text-sm">{t(errors.clientInfo.clientCategory.message)}</p>
+            <p className="text-red-600 text-sm">{t(errors.clientInfo.clientCategory.message || 'form.error.default')}</p>
           )}
         </div>
       </div>

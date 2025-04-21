@@ -19,7 +19,7 @@ export const DialogContent = React.forwardRef<
     >
       {children}
       <DialogPrimitive.Close asChild>
-        <Button variant="ghost" className="absolute top-4 right-4 p-1" aria-label="Close">
+        <Button variant="secondary" className="absolute top-4 right-4 p-1" aria-label="Close">
           <X size={16} />
         </Button>
       </DialogPrimitive.Close>

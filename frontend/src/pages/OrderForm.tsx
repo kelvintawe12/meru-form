@@ -1,6 +1,6 @@
 // src/pages/OrderForm.tsx
 import React, { useCallback, useEffect, useState } from 'react';
-import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
+import { useForm, FormProvider, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { debounce } from 'lodash';
@@ -288,7 +288,7 @@ const OrderForm: React.FC = () => {
         </div>
       )}
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={methods.handleSubmit(onSubmit as SubmitHandler<FormData>)} className="space-y-8">
           <div className="flex gap-2 mb-4">
             <Button
               type="button"

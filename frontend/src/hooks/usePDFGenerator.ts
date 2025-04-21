@@ -288,10 +288,10 @@ export const usePDFGenerator = () => {
         autoTable(doc, {
           startY: currentY + 5,
           body: [
-            [t('form.paymentStatus'), t(`options.${formData.salesOps.paymentStatus}`)],
-            [t('form.paymentMethod'), formData.salesOps.paymentMethod || '-'],
+            [t('form.paymentStatus'), t(`options.${formData.salesOps?.paymentStatus ?? 'unknown'}`)],
+            [t('form.paymentMethod'), formData.salesOps?.paymentMethod || '-'],
             [t('form.paymentReceived'), ((formData.salesOps?.paymentReceived ?? 0)).toLocaleString('en-RW', { style: 'currency', currency: 'RWF' })],
-            [t('form.invoiceNumber'), formData.salesOps.invoiceNumber || '-'],
+            [t('form.invoiceNumber'), formData.salesOps?.invoiceNumber || '-'],
           ],
           styles: { cellPadding: 3, fontSize: 12, font: 'helvetica' },
           theme: 'grid',
