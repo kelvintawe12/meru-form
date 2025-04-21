@@ -2,18 +2,16 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../contexts/LanguageContext'; // Use the correct context
 import { Languages, Menu, X, Home, ShoppingCart, User, HelpCircle, Users } from 'lucide-react';
 
 const Navbar: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const { changeLanguage } = useLanguage();
+  const { currentLanguage, changeLanguage } = useLanguage();
 
   const toggleLanguage = () => {
-    const newLang = i18n.language === 'en' ? 'rw' : 'en';
-    i18n.changeLanguage(newLang);
+    const newLang = currentLanguage === 'en' ? 'rw' : 'en';
     changeLanguage(newLang);
   };
 
@@ -107,17 +105,17 @@ const Navbar: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-br from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-gray-900 transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              animate={{ boxShadow: i18n.language === 'en' ? '0 0 10px rgba(251, 191, 36, 0.5)' : '0 0 10px rgba(255, 85, 0, 0.5)' }}
+              animate={{ boxShadow: currentLanguage === 'en' ? '0 0 10px rgba(251, 191, 36, 0.5)' : '0 0 10px rgba(255, 85, 0, 0.5)' }}
               aria-label={t('nav.toggleLanguage')}
             >
               <motion.div
-                animate={{ rotate: i18n.language === 'en' ? 0 : 360 }}
+                animate={{ rotate: currentLanguage === 'en' ? 0 : 360 }}
                 transition={{ duration: 0.5 }}
               >
                 <Languages size={20} />
               </motion.div>
               <span className="font-semibold text-sm uppercase tracking-wide">
-                {i18n.language === 'en' ? 'EN' : 'RW'}
+                {currentLanguage === 'en' ? 'EN' : 'RW'}
               </span>
             </motion.button>
 

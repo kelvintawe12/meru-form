@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage } from '../contexts/LanguageContext'; // Use the correct import
 import {
   LayoutDashboard,
   FileText,
@@ -27,7 +27,7 @@ import {
   Shield,
   AlertCircle,
   Key,
-  Info
+  Info,
 } from 'lucide-react';
 
 interface UserData {
@@ -42,7 +42,7 @@ interface UserData {
 
 const ClientPortal: React.FC = () => {
   const { t } = useTranslation();
-  const { currentLanguage: language, changeLanguage: setLanguage } = useLanguage();
+  const { currentLanguage, changeLanguage } = useLanguage(); // Use currentLanguage
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [isUploadOpen, setUploadOpen] = useState(false);
@@ -54,43 +54,36 @@ const ClientPortal: React.FC = () => {
     location: 'Kigali, Rwanda',
     avatar: 'https://randomuser.me/api/portraits/women/72.jpg',
     role: 'Account Manager',
-    lastLogin: '2 hours ago'
+    lastLogin: '2 hours ago',
   });
 
   const stats = [
     { title: t('portal.activeProjects'), value: '12', icon: <FileText />, trend: '+2.1%' },
     { title: t('portal.totalStorage'), value: '45GB', icon: <Upload />, trend: '65% used' },
     { title: t('portal.teamMembers'), value: '8', icon: <Users />, trend: '+1 new' },
-    { title: t('portal.weeklyHours'), value: '38.5h', icon: <Clock />, trend: '+4.2h' }
+    { title: t('portal.weeklyHours'), value: '38.5h', icon: <Clock />, trend: '+4.2h' },
   ];
 
   const documents = [
     { name: 'Project Plan.pdf', date: '2024-05-01', size: '2.4 MB', type: 'pdf' },
     { name: 'Financial Report.xlsx', date: '2024-05-03', size: '1.8 MB', type: 'sheet' },
-    { name: 'Design Specs.docx', date: '2024-05-05', size: '3.2 MB', type: 'doc' }
+    { name: 'Design Specs.docx', date: '2024-05-05', size: '3.2 MB', type: 'doc' },
   ];
 
   const activities = [
     { id: 1, title: t('portal.activity1'), time: '15 mins ago', icon: <CheckCircle2 /> },
     { id: 2, title: t('portal.activity2'), time: '45 mins ago', icon: <AlertCircle /> },
-    { id: 3, title: t('portal.activity3'), time: '2 hours ago', icon: <Info /> }
+    { id: 3, title: t('portal.activity3'), time: '2 hours ago', icon: <Info /> },
   ];
 
   const handleLogout = () => {
-    // Add logout logic here
     navigate('/login');
   };
 
   const handleLanguageChange = () => {
-    const newLang = language === 'en' ? 'rw' : 'en';
-    setLanguage(newLang);
-    localStorage.setItem('portalLang', newLang);
+    const newLang = currentLanguage === 'en' ? 'rw' : 'en';
+    changeLanguage(newLang);
   };
-
-  useEffect(() => {
-    // Fetch user data on mount
-    // fetchUserData().then(data => setUserData(data));
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -99,7 +92,7 @@ const ClientPortal: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
@@ -111,12 +104,12 @@ const ClientPortal: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 onClick={handleLanguageChange}
                 className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
               >
                 <Globe className="h-5 w-5" />
-                <span className="font-medium">{language.toUpperCase()}</span>
+                <span className="font-medium">{currentLanguage?.toUpperCase() || 'EN'}</span>
               </button>
 
               <button className="p-2 relative text-gray-600 hover:bg-gray-100 rounded-full">
@@ -125,21 +118,21 @@ const ClientPortal: React.FC = () => {
               </button>
 
               <div className="relative group">
-                <img 
-                  src={userData.avatar} 
-                  alt="Profile" 
+                <img
+                  src={userData.avatar}
+                  alt="Profile"
                   className="h-10 w-10 rounded-full cursor-pointer"
                 />
                 <div className="absolute right-0 top-12 hidden group-hover:block w-48 bg-white shadow-lg rounded-lg overflow-hidden">
                   <div className="py-2">
-                    <NavLink 
+                    <NavLink
                       to="/portal/profile"
                       className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                       <User className="h-5 w-5 mr-2" />
                       {t('portal.profile')}
                     </NavLink>
-                    <button 
+                    <button
                       onClick={handleLogout}
                       className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
@@ -167,7 +160,7 @@ const ClientPortal: React.FC = () => {
               <h2 className="text-lg font-semibold">{t('portal.navigation')}</h2>
             </div>
             <div className="p-2">
-              <NavLink 
+              <NavLink
                 to="/portal"
                 className="flex items-center px-4 py-3 rounded-lg hover:bg-gray-50"
               >
@@ -185,7 +178,9 @@ const ClientPortal: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Dashboard Header */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">{t('portal.welcomeBack')}, {userData.name}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {t('portal.welcomeBack')}, {userData.name}
+            </h2>
             <p className="text-gray-500 mt-2">
               {t('portal.lastLogin')}: {userData.lastLogin}
             </p>
@@ -194,7 +189,7 @@ const ClientPortal: React.FC = () => {
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {stats.map((stat, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -220,14 +215,12 @@ const ClientPortal: React.FC = () => {
             <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-lg font-semibold mb-4">{t('portal.recentActivities')}</h3>
               <div className="space-y-4">
-                {activities.map(activity => (
-                  <div 
+                {activities.map((activity) => (
+                  <div
                     key={activity.id}
                     className="flex items-center p-4 bg-gray-50 rounded-lg"
                   >
-                    <div className="bg-blue-100 p-2 rounded-full mr-4">
-                      {activity.icon}
-                    </div>
+                    <div className="bg-blue-100 p-2 rounded-full mr-4">{activity.icon}</div>
                     <div>
                       <p className="font-medium">{activity.title}</p>
                       <p className="text-sm text-gray-500">{activity.time}</p>
@@ -241,7 +234,7 @@ const ClientPortal: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-lg font-semibold mb-4">{t('portal.quickActions')}</h3>
               <div className="space-y-3">
-                <button 
+                <button
                   onClick={() => setUploadOpen(true)}
                   className="w-full flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-lg"
                 >
@@ -298,9 +291,9 @@ const ClientPortal: React.FC = () => {
                 {/* Profile Sidebar */}
                 <div className="md:w-64 space-y-6">
                   <div className="text-center">
-                    <img 
-                      src={userData.avatar} 
-                      alt="Profile" 
+                    <img
+                      src={userData.avatar}
+                      alt="Profile"
                       className="h-32 w-32 rounded-full mx-auto mb-4 shadow-lg"
                     />
                     <h2 className="text-xl font-semibold">{userData.name}</h2>
@@ -308,7 +301,7 @@ const ClientPortal: React.FC = () => {
                   </div>
 
                   <nav className="space-y-1">
-                    <button 
+                    <button
                       onClick={() => setActiveTab('profile')}
                       className={`w-full text-left px-4 py-2 rounded-lg ${
                         activeTab === 'profile' ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
@@ -316,7 +309,7 @@ const ClientPortal: React.FC = () => {
                     >
                       {t('portal.personalInfo')}
                     </button>
-                    <button 
+                    <button
                       onClick={() => setActiveTab('security')}
                       className={`w-full text-left px-4 py-2 rounded-lg ${
                         activeTab === 'security' ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
@@ -407,8 +400,8 @@ const ClientPortal: React.FC = () => {
       {/* Upload Modal */}
       <AnimatePresence>
         {isUploadOpen && (
-          <div className="modal">
-            <p>Upload Modal Content</p>
+          <div>
+            {/* Modal implementation */}
           </div>
         )}
       </AnimatePresence>
@@ -424,7 +417,7 @@ const ClientPortal: React.FC = () => {
             {/* Footer columns */}
           </div>
           <div className="border-t border-gray-800 mt-8 pt-6 text-center text-sm">
-            <p>&copy; {new Date().getFullYear()} Meru SoyCo. {t('footer.rights')}</p>
+            <p>© {new Date().getFullYear()} Meru SoyCo. {t('footer.rights')}</p>
           </div>
         </div>
       </footer>

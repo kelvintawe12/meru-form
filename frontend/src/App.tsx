@@ -10,8 +10,8 @@ import OrderForm from './pages/OrderForm';
 import ClientPortal from './pages/ClientPortal';
 import Help from './pages/Help';
 import Profile from './pages/Profile';
-import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
-import i18n from './utils/i18n';
+import { LanguageProvider } from './contexts/LanguageContext'; // Import LanguageProvider
+import i18n from './utils/i18n'; // Import i18n
 
 // Enhanced ErrorBoundary
 class ErrorBoundary extends React.Component<
@@ -48,42 +48,28 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-const AppContent: React.FC = () => {
-  const { t } = useTranslation('translation');
-  const { currentLanguage } = useLanguage();
-
-  // Sync i18next language with LanguageContext
-  React.useEffect(() => {
-    if (i18n.language !== currentLanguage) {
-      i18n.changeLanguage(currentLanguage);
-    }
-  }, [currentLanguage]);
-
-  return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      <Navbar />
-      <Hero title={t('hero.title')} subtitle={t('hero.subtitle')} cta={t('hero.cta')} />
-      <main className="flex flex-1 container mx-auto px-4 py-8">
-        <div className="flex-1">
-          <Routes>
-            <Route path="/" element={<ErrorBoundary><Home /></ErrorBoundary>} />
-            <Route path="/order" element={<ErrorBoundary><OrderForm /></ErrorBoundary>} />
-            <Route path="/portal" element={<ErrorBoundary><ClientPortal /></ErrorBoundary>} />
-            <Route path="/help" element={<ErrorBoundary><Help /></ErrorBoundary>} />
-            <Route path="/profile" element={<ErrorBoundary><Profile /></ErrorBoundary>} />
-          </Routes>
-        </div>
-        <Sidebar />
-      </main>
-      <Footer />
-    </div>
-  );
-};
-
 const App: React.FC = () => {
+  const { t } = useTranslation('translation');
+
   return (
     <LanguageProvider>
-      <AppContent />
+      <div className="flex flex-col min-h-screen bg-gray-100">
+        <Navbar />
+        <Hero title={t('hero.title')} subtitle={t('hero.subtitle')} cta={t('hero.cta')} />
+        <main className="flex flex-1 container mx-auto px-4 py-8">
+          <div className="flex-1">
+            <Routes>
+              <Route path="/" element={<ErrorBoundary><Home /></ErrorBoundary>} />
+              <Route path="/order" element={<ErrorBoundary><OrderForm /></ErrorBoundary>} />
+              <Route path="/portal" element={<ErrorBoundary><ClientPortal /></ErrorBoundary>} />
+              <Route path="/help" element={<ErrorBoundary><Help /></ErrorBoundary>} />
+              <Route path="/profile" element={<ErrorBoundary><Profile /></ErrorBoundary>} />
+            </Routes>
+          </div>
+          <Sidebar />
+        </main>
+        <Footer />
+      </div>
     </LanguageProvider>
   );
 };

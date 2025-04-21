@@ -4,7 +4,6 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from '../locales/en.json';
 import rw from '../locales/rw.json';
 
-// Configure once
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -16,11 +15,12 @@ i18n
     lng: 'en',
     fallbackLng: 'en',
     detection: {
-      order: ['htmlTag', 'navigator', 'querystring', 'cookie', 'localStorage'],
-      caches: ['cookie'],
+      order: ['localStorage', 'cookie', 'htmlTag', 'navigator', 'querystring'],
+      caches: ['localStorage'],
+      lookupLocalStorage: 'portalLang', // Explicitly use portalLang key
     },
     interpolation: {
-      escapeValue: true, // Default XSS protection
+      escapeValue: true,
     },
     debug: process.env.NODE_ENV === 'development',
     react: {
@@ -34,7 +34,7 @@ i18n
   })
   .then(() => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('i18n initialized successfully');
+      console.log('i18n initialized successfully with language:', i18n.language);
     }
   })
   .catch(console.error);
