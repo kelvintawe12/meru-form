@@ -12,6 +12,38 @@
     "logout": "Logout",
     "dashboard": "Dashboard"
   },
+  "hero": {
+    "title": "Connect with Mount Meru SoyCo Rwanda",
+    "subtitle": "Quality and trusted agricultural products delivered in Rwanda",
+    "cta": "Start Ordering"
+  },
+  "home": {
+    "hero": {
+      "title": "Premium Agriculture in Rwanda",
+      "subtitle": "Purchase high-quality agricultural products from Mount Meru SoyCo",
+      "cta": "Start Now"
+    },
+    "products": {
+      "title": "Our Products",
+      "oil": "Soy Oil",
+      "oil_desc": "Premium soy oil ideal for business and packaging needs.",
+      "grains": "Soy Seeds",
+      "grains_desc": "High-quality soy seeds for farming and productive yields.",
+      "community": "Farmer Community",
+      "community_desc": "We support the growth of small-scale farmers in Rwanda."
+    },
+    "sustainability": {
+      "image_alt": "Sustainable Agriculture Image",
+      "title": "Sustainable Agriculture",
+      "description": "We promote eco-friendly farming practices that support farmers and future generations.",
+      "learn_more": "Learn More"
+    },
+    "cta": {
+      "title": "Join Mount Meru SoyCo",
+      "description": "Partner with us to access premium agricultural products and dedicated support.",
+      "button": "Order Now"
+    }
+  },
   "form": {
     "title": "Order Form",
     "clientInfo": "Client Information",
@@ -38,6 +70,7 @@
     "accountManager": "Account Manager",
     "accountManagerPlaceholder": "Enter manager, e.g., Sarah Njoroge (optional)",
     "clientPhoto": "Client Photo",
+    "clientPhotoPlaceholder": "No file chosen",
     "customerId": "Customer ID",
     "customerIdPending": "Pending",
     "clientId": "Client ID",
@@ -46,16 +79,24 @@
     "updatedByPlaceholder": "Enter updater's name (optional)",
     "orderDetails": "Order Details",
     "orderCategory": "Order Category",
+    "selectOrderCategory": "Select order category",
     "productName": "Product Name",
+    "selectProductName": "Select product name",
     "sku": "SKU",
     "unitType": "Unit Type",
+    "selectUnitType": "Select unit type",
     "quantity": "Quantity",
     "unitPrice": "Unit Price",
     "discount": "Discount (%)",
     "subtotal": "Subtotal",
+    "total": "Total",
+    "totalValue": "0.00 RWF",
     "notes": "Notes",
+    "notesPlaceholder": "Notes",
     "orderUrgency": "Order Urgency",
+    "selectOrderUrgency": "Select order urgency",
     "packagingPreference": "Packaging Preference",
+    "selectPackagingPreference": "Select packaging preference",
     "setPaymentSchedule": "Set Payment Schedule",
     "installments": "Number of Installments",
     "amountPerInstallment": "Amount per Installment",
@@ -88,13 +129,19 @@
     "invoiceNumber": "Invoice Number",
     "compliance": "Compliance Information",
     "exportLicense": "Export License",
+    "exportLicensePlaceholder": "Export License",
     "qualityCertification": "Quality Certification",
+    "selectQualityCertification": "Select Quality Certification",
     "customsDeclaration": "Customs Declaration",
+    "customsDeclarationPlaceholder": "Customs Declaration",
     "complianceNotes": "Compliance Notes",
+    "complianceNotesPlaceholder": "Compliance Notes",
     "digitalSignature": "Digital Signature",
+    "digitalSignaturePlaceholder": "Digital Signature",
     "clearSignature": "Clear Signature",
     "reviewSubmit": "Review & Submit",
     "summary": "Order Summary",
+    "productSummary": "Product Summary",
     "confirmation": "I confirm that all information is correct",
     "emailPDF": "Email PDF to me (optional)",
     "shareWithManager": "Share PDF with Account Manager (optional)",
@@ -123,7 +170,11 @@
     "whatsappMessage": "Here is the PDF summary of your order",
     "whatsappShared": "PDF shared on WhatsApp",
     "whatsappNoPhone": "Please provide a phone number to share on WhatsApp",
-    "whatsappError": "Failed to share PDF on WhatsApp"
+    "whatsappError": "Failed to share PDF on WhatsApp",
+    "previewOrderPDF": "Preview Order PDF",
+    "generateDownloadPDF": "Generate PDF & Download",
+    "attachments": "Attachments",
+    "attachmentsPlaceholder": "No file chosen"
   },
   "options": {
     "gender": {
@@ -239,41 +290,12 @@
       "rejected": "Rejected"
     }
   },
-  "hero": {
-    "title": "Connect with Mount Meru SoyCo Rwanda",
-    "subtitle": "Quality and trusted agricultural products delivered in Rwanda",
-    "cta": "Start Ordering"
-  },
-  "home": {
-    "hero": {
-      "title": "Premium Agriculture in Rwanda",
-      "subtitle": "Purchase high-quality agricultural products from Mount Meru SoyCo",
-      "cta": "Start Now"
-    },
-    "products": {
-      "title": "Our Products",
-      "oil": "Soy Oil",
-      "oil_desc": "Premium soy oil ideal for business and packaging needs.",
-      "grains": "Soy Seeds",
-      "grains_desc": "High-quality soy seeds for farming and productive yields.",
-      "community": "Farmer Community",
-      "community_desc": "We support the growth of small-scale farmers in Rwanda."
-    },
-    "sustainability": {
-      "image_alt": "Sustainable Agriculture Image",
-      "title": "Sustainable Agriculture",
-      "description": "We promote eco-friendly farming practices that support farmers and future generations.",
-      "learn_more": "Learn More"
-    },
-    "cta": {
-      "title": "Join Mount Meru SoyCo",
-      "description": "Partner with us to access premium agricultural products and dedicated support.",
-      "button": "Order Now"
-    }
-  },
   "carousel": {
     "title": "Our Products",
-    "soyOil": "Premium quality soy oil for your business and packaging needs"
+    "soyOil": "Premium quality soy oil for your business and packaging needs",
+    "slide1": "Quality Soy Products",
+    "slide2": "Trusted by Farmers",
+    "slide3": "Fast Delivery"
   },
   "sidebar": {
     "tips": "Tips",
@@ -293,7 +315,10 @@
     "orderNow": "Order Now"
   },
   "chart": {
-    "title": "Product Quantity Summary"
+    "title": "Product Quantity Summary",
+    "sales": "Sales",
+    "orders": "Orders",
+    "revenue": "Revenue"
   },
   "portal": {
     "lastActive": "Last Active",
@@ -418,10 +443,11 @@
     "serverError": "Server Error Occurred",
     "unauthorized": "You Are Not Authorized to Access This Page",
     "forbidden": "You Are Not Authorized to Access This Page",
-    "badRequest DIE": "Invalid Request Received",
+    "badRequest": "Invalid Request Received",
     "networkError": "Network Error",
     "timeout": "Request Timed Out",
-    "unexpectedError": "An Unexpected Error Occurred"
+    "unexpectedError": "An Unexpected Error Occurred",
+    "generic": "An error occurred. Please try again."
   },
   "footer": {
     "tagline": "Advancing Agriculture in Rwanda",

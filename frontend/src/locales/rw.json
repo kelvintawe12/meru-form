@@ -12,6 +12,38 @@
     "logout": "Sohoka",
     "dashboard": "Ikibaho"
   },
+  "hero": {
+    "title": "Huza na Mount Meru SoyCo Rwanda",
+    "subtitle": "Ibicuruzwa by’ubuhinzi by’ubwiza kandi byizewe, byoherejwe mu Rwanda",
+    "cta": "Tangira Gutumiza"
+  },
+  "home": {
+    "hero": {
+      "title": "By’umwimerere by’Ubuhinzi muri Rwanda",
+      "subtitle": "Gura ibicuruzwa by’ubuhinzi by’ubwiza byoherejwe na Mount Meru SoyCo",
+      "cta": "Tangira Nonaha"
+    },
+    "products": {
+      "title": "Ibicuruzwa Byacu",
+      "oil": "Amavuta ya Soya",
+      "oil_desc": "Amavuta ya soya y’umwimerere y’ibanze yo gucuruza no gupakira.",
+      "grains": "Imbuto za Soya",
+      "grains_desc": "Imbuto za soya z’ubuziranenge zifasha mu buhinzi no kubyara umusaruro.",
+      "community": "Umuryango w’Abahinzi",
+      "community_desc": "Tugira uruhare mu guteza imbere abahinzi bacye mu Rwanda."
+    },
+    "sustainability": {
+      "image_alt": "Ishusho y’Ubuhinzi Burambye",
+      "title": "Ubuhinzi Burambye",
+      "description": "Tuzarikana ibikorwa by’ubuhinzi bushingiye ku bidukikije kandi bifasha abahinzi b’ahazaza.",
+      "learn_more": "Menya Byinshi"
+    },
+    "cta": {
+      "title": "Injira Muri Mount Meru SoyCo",
+      "description": "Huza natwe kugirango ubone ibicuruzwa by’ubuhinzi by’umwimerere hamwe n’ubufasha bwa hafi.",
+      "button": "Tumiza Nonaha"
+    }
+  },
   "form": {
     "title": "Ifishi yo Gutumiza",
     "clientInfo": "Amakuru y’Umukiriya",
@@ -38,6 +70,7 @@
     "accountManager": "Umuyobozi w’Ikonti",
     "accountManagerPlaceholder": "Andika umuyobozi, urugero: Sarah Njoroge (birashoboka)",
     "clientPhoto": "Ifoto y’Umukiriya",
+    "clientPhotoPlaceholder": "Nta dosiye yatoranijwe",
     "customerId": "Nomero y’Umukiriya",
     "customerIdPending": "Itaragera",
     "clientId": "Nomero y’Umukiriya",
@@ -46,16 +79,24 @@
     "updatedByPlaceholder": "Andika izina ry’umuvugizi (birashoboka)",
     "orderDetails": "Amakuru y’Ibicuruzwa",
     "orderCategory": "Icyiciro cy’Ibicuruzwa",
+    "selectOrderCategory": "Hitamo icyiciro cy’ibicuruzwa",
     "productName": "Izina ry’Igicuruzwa",
+    "selectProductName": "Hitamo izina ry’igicuruzwa",
     "sku": "SKU",
     "unitType": "Ubwoko bw’Igice",
+    "selectUnitType": "Hitamo ubwoko bw’igice",
     "quantity": "Umubare",
     "unitPrice": "Igiciro cy’Igice",
     "discount": "Igabanyo (%)",
     "subtotal": "Igiteranyo",
+    "total": "Igiteranyo",
+    "totalValue": "0.00 RWF",
     "notes": "Inyandiko",
+    "notesPlaceholder": "Inyandiko",
     "orderUrgency": "Ibyihutirwa by’Ibicuruzwa",
+    "selectOrderUrgency": "Hitamo ibyihutirwa by’ibicuruzwa",
     "packagingPreference": "Uburyo bwo Gupakira Bukunze",
+    "selectPackagingPreference": "Hitamo uburyo bwo gupakira bukunze",
     "setPaymentSchedule": "Shyiraho Gahunda y’Ubwishyu",
     "installments": "Umubare w’Ibice by’Ubwishyu",
     "amountPerInstallment": "Amafaranga y’Ikibice cy’Ubwishyu",
@@ -88,13 +129,19 @@
     "invoiceNumber": "Nomero y’Inyemezabwishyu",
     "compliance": "Amakuru y’Uburenganzira",
     "exportLicense": "Icyemezo cyo Kohereza",
+    "exportLicensePlaceholder": "Icyemezo cyo Kohereza hanze",
     "qualityCertification": "Icyemezo cy’Ubwiza",
+    "selectQualityCertification": "Hitamo Icyemezo cy’Ubwiza",
     "customsDeclaration": "Amakuru ya Douane",
+    "customsDeclarationPlaceholder": "Itangazo rya Douane",
     "complianceNotes": "Inyandiko z’Uburenganzira",
+    "complianceNotesPlaceholder": "Inyandiko z’Uburenganzira",
     "digitalSignature": "Umukono wa Digitale",
+    "digitalSignaturePlaceholder": "Umukono wa Digitale",
     "clearSignature": "Siba Umukono",
     "reviewSubmit": "Soma & Tanga",
     "summary": "Inshamake y’Ibicuruzwa",
+    "productSummary": "Inshamake y’Ibicuruzwa",
     "confirmation": "Ndemeza ko amakuru yose ni ayo",
     "emailPDF": "Ohereza PDF kuri imeyili yanjye (birashoboka)",
     "shareWithManager": "Ohereza PDF ku muyobozi w’ikonti (birashoboka)",
@@ -123,10 +170,13 @@
     "whatsappMessage": "Aha ni PDF y'ibizamini byawe",
     "whatsappShared": "PDF yashyikirijwe kuri WhatsApp",
     "whatsappNoPhone": "Nyamuneka tanga numero ya terefone kugirango ushyireho kuri WhatsApp",
-    "whatsappError": "Ntibyashobotse gushyiraho PDF kuri WhatsApp"
+    "whatsappError": "Ntibyashobotse gushyiraho PDF kuri WhatsApp",
+    "previewOrderPDF": "Reba PDF y’Icyemezo Mbere",
+    "generateDownloadPDF": "Kora PDF & Gukuramo",
+    "attachments": "Ibikubiyemo",
+    "attachmentsPlaceholder": "Nta dosiye yatoranijwe"
   },
   "options": {
-    "preferNotToSay": "Ntishaka kuvuga",
     "gender": {
       "male": "Gabo",
       "female": "Gore",
@@ -240,41 +290,12 @@
       "rejected": "Yanenzwe"
     }
   },
-  "hero": {
-    "title": "Huza na Mount Meru SoyCo Rwanda",
-    "subtitle": "Ibicuruzwa by’ubuhinzi by’ubwiza kandi byizewe, byoherejwe mu Rwanda",
-    "cta": "Tangira Gutumiza"
-  },
-  "home": {
-    "hero": {
-      "title": "By’umwimerere by’Ubuhinzi muri Rwanda",
-      "subtitle": "Gura ibicuruzwa by’ubuhinzi by’ubwiza byoherejwe na Mount Meru SoyCo",
-      "cta": "Tangira Nonaha"
-    },
-    "products": {
-      "title": "Ibicuruzwa Byacu",
-      "oil": "Amavuta ya Soya",
-      "oil_desc": "Amavuta ya soya y’umwimerere y’ibanze yo gucuruza no gupakira.",
-      "grains": "Imbuto za Soya",
-      "grains_desc": "Imbuto za soya z’ubuziranenge zifasha mu buhinzi no kubyara umusaruro.",
-      "community": "Umuryango w’Abahinzi",
-      "community_desc": "Tugira uruhare mu guteza imbere abahinzi bacye mu Rwanda."
-    },
-    "sustainability": {
-      "image_alt": "Ishusho y’Ubuhinzi Burambye",
-      "title": "Ubuhinzi Burambye",
-      "description": "Tuzarikana ibikorwa by’ubuhinzi bushingiye ku bidukikije kandi bifasha abahinzi b’ahazaza.",
-      "learn_more": "Menya Byinshi"
-    },
-    "cta": {
-      "title": "Injira Muri Mount Meru SoyCo",
-      "description": "Huza natwe kugirango ubone ibicuruzwa by’ubuhinzi by’umwimerere hamwe n’ubufasha bwa hafi.",
-      "button": "Tumiza Nonaha"
-    }
-  },
   "carousel": {
     "title": "Ibicuruzwa Byacu",
-    "soyOil": "Amavuta ya Soya y’umwimerere y’ibanze mu gucuruza no mu gucunga amapaketi"
+    "soyOil": "Amavuta ya Soya y’umwimerere y’ibanze mu gucuruza no mu gucunga amapaketi",
+    "slide1": "Ibicuruzwa bya Soya by’Ubwiza",
+    "slide2": "Byizwe n’Abahinzi",
+    "slide3": "Kohereza Byihuse"
   },
   "sidebar": {
     "tips": "Inama",
@@ -294,7 +315,10 @@
     "orderNow": "Tumiza Nonaha"
   },
   "chart": {
-    "title": "Inshamake y’Umubare w’Ibicuruzwa"
+    "title": "Inshamake y’Umubare w’Ibicuruzwa",
+    "sales": "Ubucuruzi",
+    "orders": "Ibicuruzwa",
+    "revenue": "Amafaranga Yinjira"
   },
   "portal": {
     "lastActive": "Ibyakozwe bwa Nyuma",
@@ -422,7 +446,8 @@
     "badRequest": "Icyifuzo Cyakiriwe Nabi",
     "networkError": "Ikosa ry’Itumanaho",
     "timeout": "Igihe Cyararenze",
-    "unexpectedError": "Ikosa Ridateganijwe Ryabaye"
+    "unexpectedError": "Ikosa Ridateganijwe Ryabaye",
+    "generic": "Ikosa ryabaye. Ongera ugerageze."
   },
   "footer": {
     "tagline": "Gutera Imbere Ubuhinzi mu Rwanda",
