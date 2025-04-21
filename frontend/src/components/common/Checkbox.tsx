@@ -1,69 +1,65 @@
 import React from 'react';
-import { LucideIcon } from 'lucide-react';
-import { motion, HTMLMotionProps } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../utils/cn';
 
-// Define ButtonProps type, extending Framer Motion's HTMLMotionProps for compatibility
-type ButtonProps = HTMLMotionProps<'button'> & {
-  variant?: 'primary' | 'secondary' | 'danger';
-  icon?: LucideIcon;
-  iconPosition?: 'left' | 'right';
+interface CheckboxProps {
+  name: string;
+  label: string;
+  tooltip?: string;
+  error?: string;
+  disabled?: boolean;
   className?: string;
-  loading?: boolean;
-};
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  checked?: boolean;
+}
 
-// Button component
-const Button: React.FC<ButtonProps> = ({
-  variant = 'primary',
-  icon: Icon,
-  iconPosition = 'left',
-  children,
+const Checkbox: React.FC<CheckboxProps> = ({
+  name,
+  label,
+  tooltip,
+  error,
+  disabled = false,
   className = '',
-  loading = false,
-  disabled,
-  ...props
+  onChange,
+  checked,
 }) => {
-  const baseClass = 'px-4 py-2 rounded font-semibold focus:outline-none flex items-center justify-center gap-2';
-  const variantClass = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400',
-    secondary: 'bg-gray-300 text-gray-800 hover:bg-gray-400 disabled:bg-gray-200',
-    danger: 'bg-red-600 text-white hover:bg-red-700 disabled:bg-red-400',
-  };
+  const { t } = useTranslation();
 
   return (
-    <motion.button
-      className={cn(baseClass, variantClass[variant], className, {
-        'opacity-50 cursor-not-allowed': disabled || loading,
-      })}
-      disabled={disabled || loading}
-      whileHover={{ scale: disabled || loading ? 1 : 1.05 }}
-      whileTap={{ scale: disabled || loading ? 1 : 0.95 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      {...props}
-    >
-      {loading && (
-        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-            fill="none"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-          />
-        </svg>
+    <div className={cn('flex items-center space-x-2', className)}>
+      <input
+        type="checkbox"
+        id={name}
+        name={name}
+        disabled={disabled}
+        onChange={onChange}
+        checked={checked}
+        className={cn(
+          'h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500',
+          disabled && 'cursor-not-allowed opacity-50'
+        )}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${name}-error` : undefined}
+      />
+      <label htmlFor={name} className="text-sm font-medium text-gray-700 flex items-center gap-1 cursor-pointer">
+        {label}
+        {tooltip && (
+          <span
+            className="text-gray-400 cursor-help"
+            title={tooltip}
+            aria-label={t('tooltip')}
+          >
+            &#9432;
+          </span>
+        )}
+      </label>
+      {error && (
+        <p id={`${name}-error`} className="text-sm text-red-600 mt-1">
+          {error}
+        </p>
       )}
-      {Icon && iconPosition === 'left' && <Icon className="h-4 w-4" />}
-      {children as React.ReactNode}
-      {Icon && iconPosition === 'right' && <Icon className="h-4 w-4" />}
-    </motion.button>
+    </div>
   );
 };
 
-export default Button;
+export default Checkbox;

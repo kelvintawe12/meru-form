@@ -62,8 +62,8 @@ export const usePDFGenerator = () => {
         // Watermark
         try {
           doc.addImage(watermark, 'PNG', 50, 50, pageWidth - 100, 100, '', 'FAST');
-          doc.setGState(new jsPDF.GState({ opacity: 0.1 }));
-          doc.setGState(new jsPDF.GState({ opacity: 1 }));
+          doc.setTextColor(150, 150, 150); // Simulate reduced opacity with lighter color
+          doc.setTextColor(0, 0, 0); // Reset to default color
         } catch {
           console.warn('Watermark not found');
         }

@@ -6,7 +6,7 @@ import { Menu, User } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const { t } = useTranslation();
-  const { language, setLanguage } = useLanguage();
+  const { currentLanguage, changeLanguage } = useLanguage();
 
   return (
     <nav className="bg-teal-600 text-white p-4 sticky top-0 z-50">
@@ -21,8 +21,8 @@ const Navbar: React.FC = () => {
           <Link to="/client-portal">{t('nav.clientPortal')}</Link>
           <Link to="/help">{t('nav.help')}</Link>
           <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as 'en' | 'rw')}
+            value={currentLanguage}
+            onChange={(e) => changeLanguage(e.target.value as 'en' | 'rw')}
             className="bg-teal-700 text-white rounded p-1"
           >
             <option value="en">English</option>

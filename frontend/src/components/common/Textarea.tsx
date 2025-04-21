@@ -1,22 +1,31 @@
-import React, { forwardRef } from 'react';
+// src/components/common/Textarea.tsx
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
+import { cn } from '../../utils/cn';
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string;
+interface TextareaProps {
+  name: string;
+  label: string;
+  placeholder?: string;
   error?: string;
 }
 
-const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({ label, error, ...props }, ref) => {
+const Textarea: React.FC<TextareaProps> = ({ name, label, placeholder, error }) => {
+  const { register } = useFormContext();
   return (
-    <div className="flex flex-col">
-      {label && <label className="mb-1 text-sm font-medium">{label}</label>}
+    <div className="mb-4">
+      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
       <textarea
-        ref={ref}
-        className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 ${error ? 'border-red-600 focus:ring-red-600' : 'focus:ring-blue-500'}`}
-        {...props}
+        id={name}
+        placeholder={placeholder}
+        className={cn('mt-1 w-full border rounded p-2', error ? 'border-red-600' : 'border-gray-300')}
+        {...register(name)}
       />
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   );
-});
+};
 
 export default Textarea;

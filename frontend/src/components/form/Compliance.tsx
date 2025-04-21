@@ -15,45 +15,44 @@ const Compliance: React.FC = () => {
   } = useFormContext<FormData>();
 
   return (
-    <div className="space-y-6 no-flicker">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <Input
           label={t('form.exportLicense')}
-          name="compliance.exportLicense"
-          register={register}
+          placeholder={t('form.exportLicensePlaceholder')}
+          {...register('compliance.exportLicense')}
           error={errors.compliance?.exportLicense?.message}
         />
       </div>
       <div>
         <Select
-          label={t('form.qualityCertification')}
           name="compliance.qualityCertification"
+          label={t('form.qualityCertification')}
           options={['ISO 22000', 'HACCP', 'Organic', 'None']}
-          register={register}
           error={errors.compliance?.qualityCertification?.message}
         />
       </div>
       <div>
         <Input
           label={t('form.customsDeclaration')}
-          name="compliance.customsDeclaration"
-          register={register}
+          placeholder={t('form.customsDeclarationPlaceholder')}
+          {...register('compliance.customsDeclaration')}
           error={errors.compliance?.customsDeclaration?.message}
         />
       </div>
       <div>
         <Textarea
-          label={t('form.complianceNotes')}
           name="compliance.complianceNotes"
-          register={register}
+          label={t('form.complianceNotes')}
+          placeholder={t('form.complianceNotesPlaceholder')}
           error={errors.compliance?.complianceNotes?.message}
         />
       </div>
       <div>
         <Input
           label={t('form.digitalSignature')}
-          name="compliance.digitalSignature"
-          register={register}
+          placeholder={t('form.digitalSignaturePlaceholder')}
+          {...register('compliance.digitalSignature')}
           required
           error={errors.compliance?.digitalSignature?.message}
         />

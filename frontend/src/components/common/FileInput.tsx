@@ -1,3 +1,4 @@
+// src/components/common/FileInput.tsx
 import React, { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +11,13 @@ interface FileInputProps {
   error?: string;
 }
 
-const FileInput: React.FC<FileInputProps> = ({ name, label, accept = 'image/*', maxSizeMB = 5, error }) => {
+const FileInput: React.FC<FileInputProps> = ({
+  name,
+  label,
+  accept = 'image/*',
+  maxSizeMB = 5,
+  error,
+}) => {
   const { t } = useTranslation();
   const { register, formState: { errors }, setValue } = useFormContext();
   const [preview, setPreview] = useState<string | null>(null);
@@ -24,7 +31,6 @@ const FileInput: React.FC<FileInputProps> = ({ name, label, accept = 'image/*', 
     } else {
       setValue(name, null);
       setPreview(null);
-      // Trigger error via form validation
     }
   };
 
@@ -37,10 +43,13 @@ const FileInput: React.FC<FileInputProps> = ({ name, label, accept = 'image/*', 
         type="file"
         id={name}
         accept={accept}
-        className={`mt-1 w-full ${error || errorMessage ? 'border-red-600' : 'border-gray-300'}`}
         {...register(name, {
-          onChange: (e) => handleFileChange(e),
+          onChange: (e) => {
+            register(name).onChange(e); // Call the default onChange
+            handleFileChange(e); // Call the custom onChange
+          },
         })}
+        className={`mt-1 w-full ${error || errorMessage ? 'border-red-600' : 'border-gray-300'}`}
       />
       {preview && <img src={preview} alt="Preview" className="mt-2 w-24 h-24 object-cover" />}
       {(error || errorMessage) && <p className="mt-1 text-sm text-red-600">{t(error || errorMessage)}</p>}

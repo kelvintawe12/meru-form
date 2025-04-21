@@ -2,15 +2,19 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../../hooks/useLanguage';
 import { Languages, Menu, X, Home, ShoppingCart, User, HelpCircle, Users } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const { changeLanguage } = useLanguage();
+
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'rw' : 'en';
     i18n.changeLanguage(newLang);
+    changeLanguage(newLang);
   };
 
   const toggleMobileMenu = () => {

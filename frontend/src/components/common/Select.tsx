@@ -1,20 +1,29 @@
-import React, { forwardRef } from 'react';
+// src/components/common/Select.tsx
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
+import { cn } from '../../utils/cn';
 
-interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string;
+interface SelectProps {
+  name: string;
+  label: string;
   options: string[];
   error?: string;
+  required?: boolean;
 }
 
-const Select = forwardRef<HTMLSelectElement, SelectProps>(({ label, options, error, ...props }, ref) => {
+const Select: React.FC<SelectProps> = ({ name, label, options, error, required }) => {
+  const { register } = useFormContext();
   return (
-    <div className="flex flex-col">
-      {label && <label className="mb-1 text-sm font-medium">{label}</label>}
+    <div className="mb-4">
+      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+        {label} {required && <span className="text-red-600">*</span>}
+      </label>
       <select
-        ref={ref}
-        className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 ${error ? 'border-red-600 focus:ring-red-600' : 'focus:ring-blue-500'}`}
-        {...props}
+        id={name}
+        className={cn('mt-1 w-full border rounded p-2', error ? 'border-red-600' : 'border-gray-300')}
+        {...register(name)}
       >
+        <option value="">{`Select ${label}`}</option>
         {options.map((option) => (
           <option key={option} value={option}>
             {option}
@@ -24,6 +33,6 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({ label, options, err
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   );
-});
+};
 
 export default Select;

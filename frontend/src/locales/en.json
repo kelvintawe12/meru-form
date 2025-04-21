@@ -4,7 +4,12 @@
     "orderForm": "Order Form",
     "clientPortal": "Client Portal",
     "help": "Help",
-    "profile": "Profile"
+    "profile": "Profile",
+    "toggleLanguage": "Toggle Language",
+    "closeMenu": "Close Menu",
+    "openMenu": "Open Menu",
+    "login": "Login",
+    "logout": "Logout"
   },
   "form": {
     "title": "Order Form",
@@ -89,11 +94,11 @@
     "clearSignature": "Clear Signature",
     "reviewSubmit": "Review & Submit",
     "summary": "Order Summary",
-    "confirmation": "Confirmation",
+    "confirmation": "I confirm that all information is correct",
     "emailPDF": "Email PDF to me (optional)",
     "shareWithManager": "Share PDF with Account Manager (optional)",
     "previewPDF": "Preview PDF",
-    "submit": "Submit",
+    "submit": "Generate PDF & Submit",
     "save": "Save",
     "clearForm": "Clear Entire Form",
     "clearFormConfirm": "Are you sure you want to clear all form data?",
@@ -109,7 +114,7 @@
     "adminApproval": "Admin Approval",
     "officialStamp": "Official Stamp",
     "confirmationDate": "Confirmation Date",
-    "initializeDraft": "Initialize Form",
+    "initializeDraft": "Initialize Draft",
     "viewDraft": "View Draft",
     "pdfGenerated": "PDF generated successfully",
     "pdfError": "Failed to generate PDF",
@@ -120,98 +125,162 @@
     "whatsappError": "Failed to share PDF on WhatsApp"
   },
   "options": {
-    "Male": "Male",
-    "Female": "Female",
-    "Other": "Other",
-    "Prefer not to say": "Prefer not to say",
-    "Farmer": "Farmer",
-    "Distributor": "Distributor",
-    "Retailer": "Retailer",
-    "Partner": "Partner",
-    "Individual Buyer": "Individual Buyer",
-    "SMS": "SMS",
-    "Call": "Call",
-    "Email": "Email",
-    "Standard": "Standard",
-    "Premium": "Premium",
-    "Enterprise": "Enterprise",
-    "Retail": "Retail",
-    "Wholesale": "Wholesale",
-    "Export": "Export",
-    "Internal Use": "Internal Use",
-    "Soy Oil": "Soy Oil",
-    "Sunflower Oil": "Sunflower Oil",
-    "Soy Flour": "Soy Flour",
-    "Soy Seeds": "Soy Seeds",
-    "Liters": "Liters",
-    "Kilograms": "Kilograms",
-    "Bottles": "Bottles",
-    "Bags": "Bags",
-    "Expedited": "Expedited",
-    "Critical": "Critical",
-    "Eco-Friendly": "Eco-Friendly",
-    "Custom": "Custom",
-    "Full Payment": "Full Payment",
-    "30% Deposit": "30% Deposit",
-    "Installments": "Installments",
-    "Truck": "Truck",
-    "Motorcycle": "Motorcycle",
-    "On Foot": "On Foot",
-    "Third-Party Courier": "Third-Party Courier",
-    "Scheduled": "Scheduled",
-    "In Transit": "In Transit",
-    "Delivered": "Delivered",
-    "Delayed": "Delayed",
-    "Kigali": "Kigali",
-    "Kayonza": "Kayonza",
-    "Musanze": "Musanze",
-    "Pending": "Pending",
-    "Partial": "Partial",
-    "Paid": "Paid",
-    "Cash on Delivery": "Cash on Delivery",
-    "M-Pesa": "M-Pesa",
-    "Bank Transfer": "Bank Transfer",
-    "Credit": "Credit",
-    "Processing": "Processing",
-    "Dispatched": "Dispatched",
-    "Cancelled": "Cancelled",
-    "Low": "Low",
-    "Medium": "Medium",
-    "High": "High",
-    "Online": "Online",
-    "Phone": "Phone",
-    "In-Person": "In-Person",
-    "Agent": "Agent",
-    "ISO 22000": "ISO 22000",
-    "HACCP": "HACCP",
-    "Organic": "Organic",
-    "None": "None",
-    "Confirmed": "Confirmed",
-    "Rejected": "Rejected"
-  },
-  "footer": {
-    "tagline": "Advancing Agriculture in Rwanda",
-    "contact": "Contact Us",
-    "x": "Follow us on X",
-    "whatsapp": "Chat on WhatsApp",
-    "privacy": "Privacy Policy"
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "preferNotToSay": "Prefer not to say"
+    },
+    "clientCategory": {
+      "farmer": "Farmer",
+      "distributor": "Distributor",
+      "retailer": "Retailer",
+      "partner": "Partner",
+      "individualBuyer": "Individual Buyer"
+    },
+    "preferredContactMethod": {
+      "sms": "SMS",
+      "call": "Call",
+      "email": "Email",
+      "whatsapp": "WhatsApp"
+    },
+    "clientTier": {
+      "standard": "Standard",
+      "premium": "Premium",
+      "enterprise": "Enterprise"
+    },
+    "orderCategory": {
+      "retail": "Retail",
+      "wholesale": "Wholesale",
+      "export": "Export",
+      "internalUse": "Internal Use"
+    },
+    "productName": {
+      "soyOil": "Soy Oil",
+      "sunflowerOil": "Sunflower Oil",
+      "soyFlour": "Soy Flour",
+      "soySeeds": "Soy Seeds"
+    },
+    "unitType": {
+      "liters": "Liters",
+      "kilograms": "Kilograms",
+      "bottles": "Bottles",
+      "bags": "Bags"
+    },
+    "orderUrgency": {
+      "standard": "Standard",
+      "expedited": "Expedited",
+      "critical": "Critical"
+    },
+    "packagingPreference": {
+      "standard": "Standard",
+      "ecoFriendly": "Eco-Friendly",
+      "custom": "Custom"
+    },
+    "paymentSchedule": {
+      "fullPayment": "Full Payment",
+      "30PercentDeposit": "30% Deposit",
+      "installments": "Installments"
+    },
+    "transportMethod": {
+      "truck": "Truck",
+      "motorcycle": "Motorcycle",
+      "onFoot": "On Foot",
+      "thirdPartyCourier": "Third-Party Courier"
+    },
+    "dispatchStatus": {
+      "scheduled": "Scheduled",
+      "inTransit": "In Transit",
+      "delivered": "Delivered",
+      "delayed": "Delayed"
+    },
+    "warehouseLocation": {
+      "kigali": "Kigali",
+      "kayonza": "Kayonza",
+      "musanze": "Musanze"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "partial": "Partial",
+      "paid": "Paid"
+    },
+    "paymentMethod": {
+      "cashOnDelivery": "Cash on Delivery",
+      "mPesa": "M-Pesa",
+      "bankTransfer": "Bank Transfer",
+      "credit": "Credit"
+    },
+    "deliveryStatus": {
+      "processing": "Processing",
+      "dispatched": "Dispatched",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "orderPriority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "salesChannel": {
+      "online": "Online",
+      "phone": "Phone",
+      "inPerson": "In-Person",
+      "agent": "Agent"
+    },
+    "qualityCertification": {
+      "iso22000": "ISO 22000",
+      "haccp": "HACCP",
+      "organic": "Organic",
+      "none": "None"
+    },
+    "adminApproval": {
+      "confirmed": "Confirmed",
+      "rejected": "Rejected"
+    }
   },
   "hero": {
     "title": "Connect with Mount Meru SoyCo Rwanda",
     "subtitle": "Quality and trusted agricultural products delivered in Rwanda",
     "cta": "Start Ordering"
   },
+  "home": {
+    "hero": {
+      "title": "Premium Agriculture in Rwanda",
+      "subtitle": "Purchase high-quality agricultural products from Mount Meru SoyCo",
+      "cta": "Start Now"
+    },
+    "products": {
+      "title": "Our Products",
+      "oil": "Soy Oil",
+      "oil_desc": "Premium soy oil ideal for business and packaging needs.",
+      "grains": "Soy Seeds",
+      "grains_desc": "High-quality soy seeds for farming and productive yields.",
+      "community": "Farmer Community",
+      "community_desc": "We support the growth of small-scale farmers in Rwanda."
+    },
+    "sustainability": {
+      "image_alt": "Sustainable Agriculture Image",
+      "title": "Sustainable Agriculture",
+      "description": "We promote eco-friendly farming practices that support farmers and future generations.",
+      "learn_more": "Learn More"
+    },
+    "cta": {
+      "title": "Join Mount Meru SoyCo",
+      "description": "Partner with us to access premium agricultural products and dedicated support.",
+      "button": "Order Now"
+    }
+  },
   "carousel": {
     "title": "Our Products",
-    "soyOil": "Premium quality soy oil for your business and packaging needs."
+    "soyOil": "Premium quality soy oil for your business and packaging needs"
   },
   "sidebar": {
     "tips": "Tips",
-    "tip1": "Review your information carefully before submitting.",
-    "tip2": "Choose clean and cost-effective transport methods.",
-    "tip3": "Premium customers receive 5% discount on every order.",
+    "tip1": "Review your information carefully before submitting",
+    "tip2": "Choose clean and cost-effective transport methods",
+    "tip3": "Premium customers receive 5% discount on every order",
     "suggestions": "Suggestions",
-    "suggestion1": "Setting a payment schedule helps manage your payments.",
+    "suggestion1": "Setting a payment schedule helps manage your payments",
     "closeSidebar": "Close Sidebar",
     "openSidebar": "Open Sidebar",
     "menu": "Menu",
@@ -219,7 +288,7 @@
     "recentOrders": "Recent Orders",
     "productHighlight": "Product Highlight",
     "featuredProduct": "Premium Soy Oil",
-    "featuredDescription": "High-quality soy oil for your needs.",
+    "featuredDescription": "High-quality soy oil for your needs",
     "orderNow": "Order Now"
   },
   "chart": {
@@ -265,6 +334,79 @@
     "contract": "Contract",
     "nda": "Non-Disclosure Agreement",
     "latestInvoice": "Latest Invoice",
-    "download": "Download"
+    "download": "Download",
+    "invoiceHistory": "Invoice History"
+  },
+  "orderHistory": {
+    "orderNumber": "Order Number",
+    "orderDate": "Order Date",
+    "status": "Status",
+    "totalAmount": "Total Amount",
+    "paymentMethod": "Payment Method",
+    "viewDetails": "View Details",
+    "noOrders": "No Orders Found",
+    "orderDetails": "Order Details",
+    "orderSummary": "Order Summary",
+    "orderStatus": "Order Status",
+    "orderItems": "Order Items",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "totalPrice": "Total Price",
+    "shippingAddress": "Shipping Address",
+    "billingAddress": "Billing Address",
+    "paymentStatus": "Payment Status",
+    "shippingMethod": "Shipping Method",
+    "trackingNumber": "Tracking Number",
+    "trackingLink": "Tracking Link",
+    "invoice": "Invoice",
+    "downloadInvoice": "Download Invoice",
+    "printInvoice": "Print Invoice",
+    "orderNotes": "Order Notes",
+    "customerSupport": "Customer Support",
+    "contactSupport": "Contact Support",
+    "returnPolicy": "Return Policy",
+    "returnRequest": "Return Request",
+    "returnStatus": "Return Status",
+    "returnReason": "Return Reason",
+    "returnInstructions": "Return Instructions",
+    "returnLabel": "Return Label",
+    "returnShipping": "Return Shipping",
+    "returnTracking": "Return Tracking",
+    "returnRefund": "Return Refund",
+    "returnExchange": "Return Exchange",
+    "returnExchangeInstructions": "Exchange Instructions",
+    "returnExchangeLabel": "Exchange Label",
+    "returnExchangeShipping": "Exchange Shipping",
+    "returnExchangeTracking": "Exchange Tracking",
+    "returnExchangeRefund": "Exchange Refund",
+    "returnExchangeStatus": "Exchange Status",
+    "returnExchangeReason": "Exchange Reason",
+    "returnExchangeRequest": "Exchange Request"
+  },
+  "success": {
+    "orderSubmitted": "Order Form Submitted Successfully",
+    "profileUpdated": "Profile Updated Successfully",
+    "passwordChanged": "Password Changed Successfully",
+    "orderCancelled": "Order Cancelled Successfully",
+    "orderReturned": "Order Returned Successfully",
+    "orderRefunded": "Order Refunded Successfully",
+    "orderExchanged": "Order Exchanged Successfully"
+  },
+  "error": {
+    "notFound": "Page Not Found",
+    "serverError": "Server Error Occurred",
+    "unauthorized": "You Are Not Authorized to Access This Page",
+    "forbidden": "You Are Not Authorized to Access This Page",
+    "badRequest DIE": "Invalid Request Received",
+    "networkError": "Network Error",
+    "timeout": "Request Timed Out",
+    "unexpectedError": "An Unexpected Error Occurred"
+  },
+  "footer": {
+    "tagline": "Advancing Agriculture in Rwanda",
+    "contact": "Contact Us",
+    "x": "Follow us on X",
+    "whatsapp": "Chat on WhatsApp",
+    "privacy": "Privacy Policy"
   }
 }

@@ -1,3 +1,4 @@
+// src/components/form/ClientInfo.tsx
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +30,7 @@ const ClientInfo: React.FC = () => {
 
   const fullName = watch('clientInfo.fullName') || '';
   const phoneNumber = watch('clientInfo.phoneNumber') || '';
-  const customerId = formatCustomerId(fullName, String(phoneNumber), new Date());
+  const customerId = formatCustomerId(fullName, phoneNumber, new Date());
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 no-flicker">
@@ -88,11 +89,12 @@ const ClientInfo: React.FC = () => {
       </div>
       <div>
         <Input
-          name="clientInfo.dateOfRegistration"
           label={t('form.dateOfRegistration')}
           type="text"
+          value={new Date().toISOString().split('T')[0]}
           disabled
           className="bg-gray-100 cursor-not-allowed"
+          {...register('clientInfo.dateOfRegistration')}
         />
       </div>
       <div>

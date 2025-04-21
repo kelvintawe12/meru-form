@@ -1,9 +1,9 @@
+// src/components/common/Button.tsx
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import { motion, HTMLMotionProps } from 'framer-motion';
 import { cn } from '../../utils/cn';
 
-// Define ButtonProps type, extending Framer Motion's HTMLMotionProps for better compatibility
 type ButtonProps = HTMLMotionProps<'button'> & {
   variant?: 'primary' | 'secondary' | 'danger';
   icon?: LucideIcon;
@@ -12,7 +12,6 @@ type ButtonProps = HTMLMotionProps<'button'> & {
   loading?: boolean;
 };
 
-// Button component
 const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   icon: Icon,

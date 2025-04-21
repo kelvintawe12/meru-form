@@ -64,9 +64,7 @@ const OrderForm: React.FC = () => {
           ? value.orderDetails.filter((detail) => detail !== undefined) as OrderEntry[]
           : undefined,
         dispatch: value.dispatch
-          ? Array.isArray(value.dispatch) 
-            ? value.dispatch.filter((entry) => entry !== undefined) as DispatchEntry[] 
-            : undefined
+          ? value.dispatch.filter((entry) => entry !== undefined) as DispatchEntry[]
           : undefined,
       };
       debouncedUpdateDraft(sanitizedValue);
@@ -83,7 +81,16 @@ const OrderForm: React.FC = () => {
       return;
     }
     const formValues = methods.getValues();
-    const result = type === 'order' ? await generatePDF(formValues) : await generateReceiptPDF(formValues);
+    const result = type === 'order' 
+      ? await generatePDF({ ...formValues, dispatch: formValues.dispatch || [] }) 
+      : await generateReceiptPDF({ 
+          ...formValues, 
+          dispatch: formValues.dispatch || [], 
+          clientInfo: { 
+            ...formValues.clientInfo, 
+            clientCategory: formValues.clientInfo.clientCategory || 'Individual Buyer' 
+          } 
+        });
     if (result) {
       setPdfUrl(result.url);
       setPdfType(type);

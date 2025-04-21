@@ -1,35 +1,31 @@
-// src/contexts/LanguageContext.tsx
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext } from 'react';
+import i18n from '../utils/i18n';
 
-interface LanguageContextType {
-  language: string;
-  setLanguage: (lang: string) => void;
-}
+// Named exports for context and hook
+export const LanguageContext = createContext({
+  currentLanguage: 'en',
+  changeLanguage: (lang: string) => { i18n.changeLanguage(lang); }
+});
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+// Custom hook with named export
+export const useLanguage = () => useContext(LanguageContext);
 
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState('en');
+// Provider component with named export
+export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
+  const [currentLanguage, setCurrentLanguage] = React.useState(i18n.language);
 
-  const value = useMemo(
-    () => ({
-      language,
-      setLanguage: (lang: string) => {
-        setLanguage(lang);
-        // Update i18next language
-        import('i18next').then((i18n) => i18n.default.changeLanguage(lang));
-      },
-    }),
-    [language]
+  const changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+    setCurrentLanguage(lang);
+  };
+
+  return (
+    <LanguageContext.Provider value={{ currentLanguage, changeLanguage }}>
+      {children}
+    </LanguageContext.Provider>
   );
-
-  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 };
 
-export const useLanguage = () => {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
-};
+function useState(language: string): [any, any] {
+  throw new Error('Function not implemented.');
+}

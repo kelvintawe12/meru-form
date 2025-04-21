@@ -1,37 +1,34 @@
+// src/components/common/RadioGroup.tsx
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { cn } from '../../utils/cn';
 
 interface RadioGroupProps {
   name: string;
   label: string;
   options: string[];
+  error?: string;
 }
 
-const RadioGroup: React.FC<RadioGroupProps> = ({ name, label, options }) => {
-  const { t } = useTranslation();
-  const { register, formState: { errors } } = useFormContext();
-  const error = errors[name]?.message as string;
-
+const RadioGroup: React.FC<RadioGroupProps> = ({ name, label, options, error }) => {
+  const { register } = useFormContext();
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700">
-        {t(label)} {errors[name] && <span className="text-red-600">*</span>}
-      </label>
-      <div className="mt-2 flex gap-4">
+      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <div className="mt-1">
         {options.map((option) => (
-          <label key={option} className="flex items-center">
+          <label key={option} className="inline-flex items-center mr-4">
             <input
               type="radio"
-              {...register(name)}
               value={option}
-              className="mr-2"
+              {...register(name)}
+              className="form-radio"
             />
-            {t(`form.options.${option}`)}
+            <span className="ml-2">{option}</span>
           </label>
         ))}
       </div>
-      {error && <p className="mt-1 text-sm text-red-600">{t(error)}</p>}
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   );
 };
