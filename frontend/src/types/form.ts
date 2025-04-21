@@ -1,171 +1,132 @@
+// src/types/form.ts
 export interface ClientInfo {
   fullName: string;
   phoneNumber: string;
   email?: string;
-  gender?: 'Male' | 'Female' | 'Other' | 'Prefer not to say';
+  gender?: 'male' | 'female' | 'other' | 'preferNotToSay';
   address: string;
-  clientCategory: 'Farmer' | 'Distributor' | 'Retailer' | 'Partner' | 'Individual Buyer';
-  dateOfRegistration: string;
+  clientCategory?: 'farmer' | 'distributor' | 'retailer' | 'partner' | 'individualBuyer';
+  clientPhoto?: File | null;
+  dateOfRegistration?: string;
   referredBy?: string;
-  preferredContactMethod: 'SMS' | 'Call' | 'Email';
+  preferredContactMethod?: 'sms' | 'call' | 'email' | 'whatsapp';
   businessName?: string;
   taxId?: string;
   loyaltyProgram?: boolean;
-  clientTier: 'Standard' | 'Premium' | 'Enterprise';
+  clientTier?: 'standard' | 'premium' | 'enterprise';
   accountManager?: string;
-  clientPhoto?: File | null;
-}
-
-export interface Client {
-  id: string;
-  info: ClientInfo;
-  orders: string[];
 }
 
 export interface OrderEntry {
-  orderCategory?: 'Retail' | 'Wholesale' | 'Export' | 'Internal Use';
-  productName?: 'Soy Oil' | 'Sunflower Oil' | 'Soy Flour' | 'Soy Seeds';
+  orderCategory?: 'retail' | 'wholesale' | 'export';
+  productName: string;
   sku?: string;
-  unitType?: 'Liters' | 'Kilograms' | 'Bottles' | 'Bags';
-  quantity?: number;
-  unitPrice?: number;
+  unitType?: 'liters' | 'kilograms' | 'bottles' | 'bags';
+  quantity: number;
+  unitPrice: number;
   discount?: number;
   notes?: string;
-  orderUrgency?: 'Standard' | 'Expedited' | 'Critical';
-  packagingPreference?: 'Standard' | 'Eco-Friendly' | 'Custom';
-  paymentSchedule?: 'Full Payment' | '30% Deposit' | 'Installments';
-}
-
-export interface Order {
-  id: string;
-  clientId: string;
-  entries: OrderEntry[];
-  total: number;
-  status: 'Pending' | 'Processing' | 'Completed' | 'Cancelled';
+  orderUrgency?: 'standard' | 'urgent';
+  packagingPreference?: 'standard' | 'custom';
+  paymentSchedule?: 'fullPayment' | 'installments';
 }
 
 export interface DispatchEntry {
-  dispatchId: string;
-  dispatchDate: string;
-  dispatchStatus: 'Scheduled' | 'In Transit' | 'Delivered' | 'Delayed';
-  dispatchTime: string;
-  vehicleNumber: string;
-  driverName: string;
-  contactNumber: string;
-  notes: string;
-}
-
-export interface Dispatch {
-  id: string;
-  orderId: string;
-  entries: DispatchEntry[];
-}
-
-export interface DispatchDetail {
+  product: string;
+  quantityDispatched: number;
+  transportMethod?: 'truck' | 'motorcycle' | 'onFoot' | 'thirdPartyCourier';
+  dispatchStatus?: 'scheduled' | 'inTransit' | 'delivered' | 'delayed';
   dispatchDate?: string;
-  dispatchTime?: string;
-  vehicleNumber?: string;
-  driverName?: string;
-  contactNumber?: string;
-  notes?: string;
+  trackingReference?: string;
+  dispatchNotes?: string;
+  driverContact?: string;
+  warehouseLocation?: 'kigali' | 'kayonza' | 'musanze';
+  blockchainHash?: string;
 }
 
 export interface SalesOps {
   salesRepresentative?: string;
-  paymentStatus: 'Pending' | 'Partial' | 'Paid';
-  paymentMethod?: 'Cash on Delivery' | 'M-Pesa' | 'Bank Transfer' | 'Credit';
+  paymentStatus?: 'pending' | 'partial' | 'paid';
+  paymentMethod?: 'cashOnDelivery' | 'mPesa' | 'bankTransfer' | 'credit';
   paymentReceived?: number;
-  paymentReceipt?: File | null;
-  deliveryStatus: 'Processing' | 'Dispatched' | 'Delivered' | 'Cancelled';
+  paymentReceipt?: any;
+  deliveryStatus?: 'processing' | 'dispatched' | 'delivered' | 'cancelled';
   preferredDeliveryDate?: string;
   internalComments?: string;
-  orderPriority: 'Low' | 'Medium' | 'High';
-  salesChannel: 'Online' | 'Phone' | 'In-Person' | 'Agent';
+  orderPriority?: 'low' | 'medium' | 'high';
+  salesChannel?: 'online' | 'phone' | 'inPerson' | 'agent';
   crmSync?: boolean;
   invoiceNumber?: string;
 }
 
-export interface SalesOpsDetail {
-  operationDate?: string;
-  operationType?: string;
-  notes?: string;
-}
-
 export interface Compliance {
   exportLicense?: string;
-  qualityCertification?: 'ISO 22000' | 'HACCP' | 'Organic' | 'None';
+  qualityCertification?: 'iso22000' | 'haccp' | 'organic' | 'none';
   customsDeclaration?: string;
   complianceNotes?: string;
-  digitalSignature: string;
-}
-
-export interface ComplianceDetail {
-  complianceType?: string;
-  status?: string;
-  notes?: string;
+  digitalSignature?: string;
 }
 
 export interface Confirmation {
-  confirmedBy: string;
-  confirmationDate: string;
-  confirmationStatus: 'Pending' | 'Confirmed' | 'Rejected';
-}
-
-export interface AdminConfirmationDetail {
-  confirmationDate?: string;
   confirmedBy?: string;
-  notes?: string;
-}
-
-export interface HistoryEntry {
-  action: string;
-  timestamp: string;
-  user: string;
+  confirmationDate?: string;
+  confirmationStatus?: 'pending' | 'confirmed' | 'rejected';
 }
 
 export interface Notes {
-  internalNotes: string;
-  clientNotes: string;
+  internalNotes?: string;
+  clientNotes?: string;
 }
 
 export interface Attachments {
-  attachment: File[];
-  attachmentName: string[];
+  attachment?: any[];
+  attachmentName?: string[];
 }
 
 export interface FormData {
-  clientInfo: {
-    fullName: string;
-    phoneNumber: string;
-    email?: string;
-    gender?: 'Male' | 'Female' | 'Other' | 'Prefer not to say';
-    address?: string;
-    clientCategory: 'Farmer' | 'Distributor' | 'Retailer' | 'Partner' | 'Individual Buyer';
-    dateOfRegistration?: string;
-    referredBy?: string;
-    preferredContactMethod?: 'SMS' | 'Call' | 'Email';
-    businessName?: string;
-    taxId?: string;
-    loyaltyProgram?: boolean;
-    clientTier?: 'Standard' | 'Premium' | 'Enterprise';
-    accountManager?: string;
-    clientPhoto?: File | null;
-  };
+  clientInfo: ClientInfo;
   orderDetails: OrderEntry[];
-  dispatch: DispatchEntry[];
-  salesOps: SalesOps;
-  compliance: Compliance;
-  confirmation: Confirmation;
-  notes: Notes;
-  attachments: Attachments;
-  status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
+  dispatch?: DispatchEntry[];
+  salesOps?: SalesOps;
+  compliance?: Compliance;
+  confirmation?: Confirmation;
+  notes?: Notes;
+  attachments?: Attachments;
+  status?: 'draft' | 'submitted' | 'processing' | 'completed' | 'cancelled';
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
   updatedBy?: string;
   clientId?: string;
-  dispatchDetails: DispatchDetail[];
-  salesOpsDetails: SalesOpsDetail[];
-  complianceDetails: ComplianceDetail[];
-  adminConfirmationDetails: AdminConfirmationDetail[];
+  orderId?: string;
+  clientName?: string;
+  clientPhone?: string;
+  clientEmail?: string;
+  clientAddress?: string;
+  clientCategory?: string;
+  clientTier?: string;
+  clientPhoto?: string;
+  clientBusinessName?: string;
+  clientTaxId?: string;
+  clientLoyaltyProgram?: boolean;
+  clientAccountManager?: string;
+  clientReferredBy?: string;
+  clientPreferredContactMethod?: string;
+  clientGender?: string;
+  clientDateOfRegistration?: string;
+  clientNotes?: string;
+  clientAttachments?: string[];
+  clientStatus?: string;
+  clientCreatedAt?: string;
+  clientUpdatedAt?: string;
+  clientCreatedBy?: string;
+
+  shippingDetails?: any[];
+  // Removed duplicate and conflicting declaration of orderDetails
+  orderStatus?: string;
+  orderPriority?: string;
+  dispatchDetails?: any[];
+  salesOpsDetails?: any[];
+  complianceDetails?: any[];
+  adminConfirmationDetails?: any[];
 }

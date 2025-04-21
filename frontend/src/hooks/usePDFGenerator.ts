@@ -190,7 +190,7 @@ export const usePDFGenerator = () => {
               code: 'MMS-2023-INV',
               status: 'Approved',
               inventory: 'Stock Verified',
-              qc: formData.compliance.qualityCertification ? 'Passed' : 'Pending',
+              qc: formData.compliance?.qualityCertification ? 'Passed' : 'Pending',
             },
           ],
           styles: { cellPadding: 3, fontSize: 10, font: 'helvetica' },
@@ -207,7 +207,7 @@ export const usePDFGenerator = () => {
         doc.text('________________________', 15, currentY + 5);
         doc.text('Digital Stamp:', pageWidth - 60, currentY);
         try {
-          doc.addImage(formData.compliance.digitalSignature || defaultSignature, 'PNG', pageWidth - 60, currentY + 2, 50, 20);
+          doc.addImage(formData.compliance?.digitalSignature || defaultSignature, 'PNG', pageWidth - 60, currentY + 2, 50, 20);
         } catch {
           console.warn('Signature image not found');
         }
@@ -290,7 +290,7 @@ export const usePDFGenerator = () => {
           body: [
             [t('form.paymentStatus'), t(`options.${formData.salesOps.paymentStatus}`)],
             [t('form.paymentMethod'), formData.salesOps.paymentMethod || '-'],
-            [t('form.paymentReceived'), (formData.salesOps.paymentReceived ?? 0).toLocaleString('en-RW', { style: 'currency', currency: 'RWF' })],
+            [t('form.paymentReceived'), ((formData.salesOps?.paymentReceived ?? 0)).toLocaleString('en-RW', { style: 'currency', currency: 'RWF' })],
             [t('form.invoiceNumber'), formData.salesOps.invoiceNumber || '-'],
           ],
           styles: { cellPadding: 3, fontSize: 12, font: 'helvetica' },

@@ -1,136 +1,88 @@
-import React, { useState } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+// src/components/form/OrderDetails.tsx
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import Input from '../common/Input';
-import Select from '../common/Select';
-import Textarea from '../common/Textarea';
-import Button from '../common/Button';
-import PaymentScheduleModal from './PaymentScheduleModal';
 import { Trash2 } from 'lucide-react';
-import { FormData } from '../../types/form';
+import Button from '../common/Button';
 
-const OrderDetails: React.FC = () => {
-  const { t } = useTranslation();
-  const { control, watch } = useFormContext<FormData>();
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'orderDetails',
-  });
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+interface OrderDetailsProps {
+  orderFields: any[];
+  appendOrder: (order: any) => void;
+  removeOrder: (index: number) => void;
+}
 
-  const calculateSubtotal = (index: number) => {
-    const quantity = watch(`orderDetails.${index}.quantity`) ?? 0;
-    const unitPrice = watch(`orderDetails.${index}.unitPrice`) ?? 0;
-    const discount = watch(`orderDetails.${index}.discount`) ?? 0;
-    return (quantity * unitPrice * (1 - discount / 100)).toFixed(2);
-  };
+const OrderDetails: React.FC<OrderDetailsProps> = ({ orderFields, appendOrder, removeOrder }) => {
+  const { t } = useTranslation('translation');
+  const { register, formState: { errors } } = useFormContext();
 
   return (
-    <div>
-      {fields.map((field, index) => (
-        <div key={field.id} className="border p-4 mb-4 rounded-lg relative">
-          <Button
-            variant="danger"
-            onClick={() => remove(index)}
-            className="absolute top-2 right-2"
-            disabled={fields.length === 1}
-            aria-label={t('form.removeProduct')}
-          >
-            <Trash2 size={16} />
-          </Button>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Select
-              name={`orderDetails.${index}.orderCategory`}
-              label="form.orderCategory"
-              options={['Retail', 'Wholesale', 'Export', 'Internal Use']}
-              placeholder={t('options.select')}
-            />
-            <Select
-              name={`orderDetails.${index}.productName`}
-              label="form.productName"
-              options={['Soy Oil', 'Sunflower Oil', 'Soy Flour', 'Soy Seeds']}
-              placeholder={t('options.select')}
-            />
-            <Input name={`orderDetails.${index}.sku`} label="form.sku" placeholder={`SOY-${Math.random().toString(36).slice(2, 7)}`} />
-            <Select
-              name={`orderDetails.${index}.unitType`}
-              label="form.unitType"
-              options={['Liters', 'Kilograms', 'Bottles', 'Bags']}
-              placeholder={t('options.select')}
-            />
-            <Input
-              name={`orderDetails.${index}.quantity`}
-              label="form.quantity"
-              type="number"
-              placeholder="1"
-            />
-            <Input
-              name={`orderDetails.${index}.unitPrice`}
-              label="form.unitPrice"
-              type="number"
-              placeholder="0"
-            />
-            <Input
-              name={`orderDetails.${index}.discount`}
-              label="form.discount"
-              type="number"
-              placeholder="0"
-            />
-            <div>
-              <p className="text-sm font-medium text-gray-700">{t('form.subtotal')}</p>
-              <p className="mt-1 text-gray-900">{calculateSubtotal(index)} RWF</p>
-            </div>
-            <Textarea name={`orderDetails.${index}.notes`} label="form.notes" placeholder={t('form.notes')} />
-            <Select
-              name={`orderDetails.${index}.orderUrgency`}
-              label="form.orderUrgency"
-              options={['Standard', 'Expedited', 'Critical']}
-              placeholder={t('options.select')}
-            />
-            <Select
-              name={`orderDetails.${index}.packagingPreference`}
-              label="form.packagingPreference"
-              options={['Standard', 'Eco-Friendly', 'Custom']}
-              placeholder={t('options.select')}
-            />
+    <div className="space-y-4">
+      <h2 className="text-lg font-semibold text-gray-800">{t('form.orderDetails')}</h2>
+      {orderFields.map((field, index) => (
+        <div key={field.id} className="border p-4 rounded-lg space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-md font-medium">{t('form.product')} {index + 1}</h3>
             <Button
-              variant="secondary"
-              onClick={() => {
-                setSelectedIndex(index);
-                setModalOpen(true);
-              }}
-              aria-label={t('form.setPaymentSchedule')}
+              variant="danger"
+              onClick={() => removeOrder(index)}
+              aria-label={t('form.clearSection')}
+              className="p-1"
             >
-              {t('form.setPaymentSchedule')}
+              <Trash2 size={16} />
             </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium">{t('form.productName')}</label>
+              <select
+                {...register(`orderDetails.${index}.productName`)}
+                className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">{t('form.selectProductName')}</option>
+                {Object.keys(t('options.productName', { returnObjects: true })).map((key) => (
+                  <option key={key} value={key}>
+                    {t(`options.productName.${key}`)}
+                  </option>
+                ))}
+              </select>
+              {errors.orderDetails?.[index]?.productName && (
+                <p className="text-red-600 text-sm">{t(errors.orderDetails[index].productName.message)}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium">{t('form.quantity')}</label>
+              <input
+                type="number"
+                {...register(`orderDetails.${index}.quantity`, { valueAsNumber: true })}
+                className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.orderDetails?.[index]?.quantity && (
+                <p className="text-red-600 text-sm">{t(errors.orderDetails[index].quantity.message)}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium">{t('form.unitPrice')}</label>
+              <input
+                type="number"
+                {...register(`orderDetails.${index}.unitPrice`, { valueAsNumber: true })}
+                className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.orderDetails?.[index]?.unitPrice && (
+                <p className="text-red-600 text-sm">{t(errors.orderDetails[index].unitPrice.message)}</p>
+              )}
+            </div>
           </div>
         </div>
       ))}
       <Button
-        variant="primary"
-        onClick={() => append({
-          orderCategory: undefined,
-          productName: undefined,
-          sku: undefined,
-          unitType: undefined,
-          quantity: undefined,
-          unitPrice: undefined,
-          discount: undefined,
-          notes: undefined,
-          orderUrgency: undefined,
-          packagingPreference: undefined,
-          paymentSchedule: undefined,
-        })}
+        type="button"
+        variant="secondary"
+        onClick={() => appendOrder({ productName: '', sku: '', unitType: '', quantity: 0, unitPrice: 0, discount: 0 })}
         aria-label={t('form.addProduct')}
+        className="mt-2"
       >
         {t('form.addProduct')}
       </Button>
-      <PaymentScheduleModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        index={selectedIndex}
-      />
     </div>
   );
 };

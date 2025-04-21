@@ -1,100 +1,87 @@
-// src/schemas/formSchema.ts
+// src/utils/formSchema.ts
 import { z } from 'zod';
-
-export type OrderEntry = {
-  orderCategory?: 'Retail' | 'Wholesale' | 'Export';
-  productName?: string;
-  sku?: string;
-  unitType?: string;
-  quantity?: number;
-  pricePerUnit?: number;
-  totalPrice?: number;
-  paymentSchedule?: string;
-};
-
-export type ClientInfo = {
-  fullName: string;
-  phoneNumber: string;
-  clientCategory: 'Farmer' | 'Distributor' | 'Retailer' | 'Partner' | 'Individual Buyer';
-  preferredContactMethod: 'SMS' | 'Call' | 'Email';
-  loyaltyProgram: boolean;
-  [key: string]: string | number | boolean | undefined;
-};
 
 export const formSchema = z.object({
   clientInfo: z.object({
-    fullName: z.string().min(1, 'Full name is required'),
-    phoneNumber: z.string().min(1, 'Phone number is required'),
-    email: z.string().email('Invalid email').optional().or(z.literal('')),
-    gender: z.enum(['Male', 'Female', 'Other', 'Prefer not to say']).optional(),
-    address: z.string().optional(),
-    clientCategory: z
-      .enum(['Farmer', 'Distributor', 'Retailer', 'Partner', 'Individual Buyer'])
-      .default('Farmer'),
+    fullName: z.string().min(1, { message: 'form.fullNameRequired' }),
+    phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, { message: 'form.phoneNumberInvalid' }),
+    email: z.string().email({ message: 'form.emailInvalid' }).optional().or(z.literal('')),
+    gender: z.enum(['male', 'female', 'other', 'preferNotToSay']).optional(),
+    address: z.string().min(1, { message: 'form.addressRequired' }),
+    clientCategory: z.enum(['farmer', 'distributor', 'retailer', 'partner', 'individualBuyer']).optional(),
     dateOfRegistration: z.string().optional(),
     referredBy: z.string().optional(),
-    preferredContactMethod: z.enum(['SMS', 'Call', 'Email']).default('SMS'),
+    preferredContactMethod: z.enum(['sms', 'call', 'email', 'whatsapp']).optional(),
     businessName: z.string().optional(),
     taxId: z.string().optional(),
-    loyaltyProgram: z.boolean().default(false),
-    clientTier: z.enum(['Standard', 'Premium', 'Enterprise']).optional(),
+    loyaltyProgram: z.boolean().optional(),
+    clientTier: z.enum(['standard', 'premium', 'enterprise']).optional(),
     accountManager: z.string().optional(),
-    clientPhoto: z.any().optional(), // File input, refine if needed
-  }),
-  compliance: z.object({
-    exportLicense: z.string().optional(),
-    qualityCertification: z
-      .enum(['ISO 22000', 'HACCP', 'Organic', 'None'])
-      .default('None'),
-    customsDeclaration: z.string().optional(),
-    complianceNotes: z.string().optional(),
-    digitalSignature: z.string().min(1, 'Digital signature is required'),
   }),
   orderDetails: z.array(
     z.object({
-      orderCategory: z.enum(['Retail', 'Wholesale', 'Export']).default('Retail'),
-      productName: z.string().min(1, 'Product name is required'),
-      sku: z.string().min(1, 'SKU is required'),
-      unitType: z.string().min(1, 'Unit type is required'),
-      quantity: z.number().min(1, 'Quantity must be at least 1'),
-      unitPrice: z.number().min(0, 'Unit price cannot be negative'),
-      discount: z.number().min(0, 'Discount cannot be negative').optional(),
+      orderCategory: z.enum(['retail', 'wholesale', 'export']).optional(),
+      productName: z.string().min(1, { message: 'form.productNameRequired' }),
+      sku: z.string().optional(),
+      unitType: z.enum(['liters', 'kilograms', 'bottles', 'bags']).optional(),
+      quantity: z.number().min(1, { message: 'form.quantityRequired' }),
+      unitPrice: z.number().min(0, { message: 'form.unitPriceRequired' }),
+      discount: z.number().min(0).max(100).optional(),
       notes: z.string().optional(),
-      orderUrgency: z.enum(['Standard', 'Urgent']).default('Standard'),
-      packagingPreference: z.string().optional(),
-      paymentSchedule: z.string().optional(),
+      orderUrgency: z.enum(['standard', 'urgent']).optional(),
+      packagingPreference: z.enum(['standard', 'custom']).optional(),
+      paymentSchedule: z.enum(['fullPayment', 'installments']).optional(),
     })
-  ).min(1, 'At least one order detail is required'),
+  ).min(1, { message: 'form.orderDetailsRequired' }),
+  dispatch: z.array(
+    z.object({
+      product: z.string().min(1, { message: 'form.productRequired' }),
+      quantityDispatched: z.number().min(1, { message: 'form.quantityDispatchedRequired' }),
+      transportMethod: z.enum(['truck', 'motorcycle', 'onFoot', 'thirdPartyCourier']).optional(),
+      dispatchStatus: z.enum(['scheduled', 'inTransit', 'delivered', 'delayed']).optional(),
+      dispatchDate: z.string().optional(),
+      trackingReference: z.string().optional(),
+      dispatchNotes: z.string().optional(),
+      driverContact: z.string().optional(),
+      warehouseLocation: z.enum(['kigali', 'kayonza', 'musanze']).optional(),
+      blockchainHash: z.string().optional(),
+    })
+  ).optional(),
   salesOps: z.object({
     salesRepresentative: z.string().optional(),
-    paymentStatus: z.enum(['Pending', 'Paid', 'Failed']).default('Pending'),
-    paymentMethod: z
-      .enum(['Cash on Delivery', 'Bank Transfer', 'Mobile Money'])
-      .default('Cash on Delivery'),
+    paymentStatus: z.enum(['pending', 'partial', 'paid']).optional(),
+    paymentMethod: z.enum(['cashOnDelivery', 'mPesa', 'bankTransfer', 'credit']).optional(),
     paymentReceived: z.number().min(0).optional(),
-    paymentReceipt: z.any().optional(),
-    deliveryStatus: z.enum(['Processing', 'Shipped', 'Delivered']).default('Processing'),
+    paymentReceipt: z.any().nullable().optional(),
+    deliveryStatus: z.enum(['processing', 'dispatched', 'delivered', 'cancelled']).optional(),
     preferredDeliveryDate: z.string().optional(),
     internalComments: z.string().optional(),
-    orderPriority: z.enum(['Low', 'Medium', 'High']).default('Low'),
-    salesChannel: z.enum(['Online', 'Offline']).default('Online'),
-    crmSync: z.boolean().default(false),
+    orderPriority: z.enum(['low', 'medium', 'high']).optional(),
+    salesChannel: z.enum(['online', 'phone', 'inPerson', 'agent']).optional(),
+    crmSync: z.boolean().optional(),
     invoiceNumber: z.string().optional(),
-  }),
+  }).optional(),
+  compliance: z.object({
+    exportLicense: z.string().optional(),
+    qualityCertification: z.enum(['iso22000', 'haccp', 'organic', 'none']).optional(),
+    customsDeclaration: z.string().optional(),
+    complianceNotes: z.string().optional(),
+    digitalSignature: z.string().optional(),
+  }).optional(),
   confirmation: z.object({
     confirmedBy: z.string().optional(),
     confirmationDate: z.string().optional(),
-    confirmationStatus: z.enum(['Pending', 'Confirmed']).default('Pending'),
-  }),
+    confirmationStatus: z.enum(['pending', 'confirmed', 'rejected']).optional(),
+  }).optional(),
   notes: z.object({
     internalNotes: z.string().optional(),
     clientNotes: z.string().optional(),
-  }),
+  }).optional(),
   attachments: z.object({
     attachment: z.array(z.any()).optional(),
     attachmentName: z.array(z.string()).optional(),
-  }),
-  status: z.enum(['Draft', 'Submitted', 'Approved']).default('Draft'),
+  }).optional(),
+  status: z.enum(['draft', 'submitted', 'processing', 'completed', 'cancelled']).optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
   createdBy: z.string().optional(),
@@ -105,20 +92,3 @@ export const formSchema = z.object({
   complianceDetails: z.array(z.any()).optional(),
   adminConfirmationDetails: z.array(z.any()).optional(),
 });
-
-export interface FormData {
-  clientInfo: {
-    fullName: string;
-    phoneNumber: string;
-    clientCategory: 'Farmer' | 'Distributor' | 'Retailer' | 'Partner' | 'Individual Buyer';
-    preferredContactMethod: 'SMS' | 'Call' | 'Email';
-    loyaltyProgram: boolean;
-    [key: string]: string | number | boolean; // Stricter type excluding undefined
-  };
-  orderDetails?: {
-    orderCategory?: 'Retail' | 'Wholesale' | 'Export' | 'Internal Use';
-    productName?: 'Soy Oil' | 'Palm Oil' | 'Sunflower Oil' | 'Canola Oil';
-    // Other fields...
-  };
-  // Other properties...
-}

@@ -1,11 +1,17 @@
+// src/components/PDFPreviewModal.tsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './common/Dialog';
+import Button from './common/Button';
+import { Download, Share2 } from 'lucide-react';
 
 interface PDFPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   pdfUrl: string;
   onDownload: () => void;
-  onShare: () => Promise<void>;
+  onShare: () => void;
+  title: string;
 }
 
 const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
@@ -14,53 +20,51 @@ const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
   pdfUrl,
   onDownload,
   onShare,
+  title,
 }) => {
-  if (!isOpen) return null;
+  const { t } = useTranslation('translation');
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="pdf-preview-title"
-    >
-      <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-full flex flex-col">
-        <header className="flex justify-between items-center p-4 border-b">
-          <h2 id="pdf-preview-title" className="text-lg font-semibold">
-            PDF Preview
-          </h2>
-          <button
-            onClick={onClose}
-            aria-label="Close PDF preview"
-            className="text-gray-600 hover:text-gray-900"
-          >
-            ✕
-          </button>
-        </header>
-        <div className="flex-1 overflow-auto">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <div className="mt-4">
+          <p className="text-gray-600 mb-4">{t('form.previewContent')}</p>
           <iframe
             src={pdfUrl}
-            title="PDF Preview"
-            className="w-full h-full"
-            frameBorder="0"
+            className="w-full h-[500px] border rounded"
+            title={t('form.previewContent')}
           />
         </div>
-        <footer className="flex justify-end gap-4 p-4 border-t">
-          <button
+        <DialogFooter>
+          <Button
+            variant="secondary"
             onClick={onDownload}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            icon={Download}
+            aria-label={t('form.download')}
           >
-            Download
-          </button>
-          <button
+            {t('form.download')}
+          </Button>
+          <Button
+            variant="primary"
             onClick={onShare}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            icon={Share2}
+            aria-label={t('form.share')}
           >
-            Share via WhatsApp
-          </button>
-        </footer>
-      </div>
-    </div>
+            {t('form.share')}
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            aria-label={t('form.close')}
+          >
+            {t('form.close')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
