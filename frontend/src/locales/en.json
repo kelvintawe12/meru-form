@@ -45,6 +45,12 @@
     }
   },
   "form": {
+    "redo": "Redo",
+    "removeAttachment": "Remove Attachment",
+    "previewContent": "Preview Content",
+    "download": "Download",
+    "share": "Share",
+    "close": "Close",
     "title": "Order Form",
     "clientInfo": "Client Information",
     "fullName": "Full Name",
@@ -177,6 +183,8 @@
     "attachmentsPlaceholder": "No file chosen"
   },
   "options": {
+    "In Transit": "In Transit",
+    "Delivered": "Delivered",
     "gender": {
       "male": "Male",
       "female": "Female",

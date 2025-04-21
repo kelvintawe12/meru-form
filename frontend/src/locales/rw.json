@@ -45,6 +45,12 @@
     }
   },
   "form": {
+    "redo": "Ongera ukore",
+    "removeAttachment": "Kuraho Umugereka",
+    "previewContent": "Reba ibiri muri PDF",
+    "download": "Gukuramo",
+    "share": "Sohereza",
+    "close": "Funga",
     "title": "Ifishi yo Gutumiza",
     "clientInfo": "Amakuru y’Umukiriya",
     "fullName": "Izina Ryuzuye",
@@ -177,6 +183,8 @@
     "attachmentsPlaceholder": "Nta dosiye yatoranijwe"
   },
   "options": {
+    "In Transit": "Bari mu Ngendo",
+    "Delivered": "Byagezwe",
     "gender": {
       "male": "Gabo",
       "female": "Gore",
