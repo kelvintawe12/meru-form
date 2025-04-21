@@ -42,7 +42,7 @@ interface UserData {
 
 const ClientPortal: React.FC = () => {
   const { t } = useTranslation();
-  const { language, setLanguage } = useLanguage();
+  const { currentLanguage: language, changeLanguage: setLanguage } = useLanguage();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [isUploadOpen, setUploadOpen] = useState(false);
@@ -407,7 +407,9 @@ const ClientPortal: React.FC = () => {
       {/* Upload Modal */}
       <AnimatePresence>
         {isUploadOpen && (
-          {/* Modal implementation from previous example */}
+          <div className="modal">
+            <p>Upload Modal Content</p>
+          </div>
         )}
       </AnimatePresence>
 

@@ -10,14 +10,15 @@ import OrderForm from './pages/OrderForm';
 import ClientPortal from './pages/ClientPortal';
 import Help from './pages/Help';
 import Profile from './pages/Profile';
-import { useLanguage } from './contexts/LanguageContext';
+import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
+import i18n from './utils/i18n';
 
 // Enhanced ErrorBoundary
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error: Error | null; errorInfo: React.ErrorInfo | null }
 > {
-  state = { hasError: false, error: null, errorInfo: null };
+  state: { hasError: boolean; error: Error | null; errorInfo: React.ErrorInfo | null } = { hasError: false, error: null, errorInfo: null };
 
   static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
@@ -47,9 +48,16 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const { t } = useTranslation('translation');
-  const { language } = useLanguage();
+  const { currentLanguage } = useLanguage();
+
+  // Sync i18next language with LanguageContext
+  React.useEffect(() => {
+    if (i18n.language !== currentLanguage) {
+      i18n.changeLanguage(currentLanguage);
+    }
+  }, [currentLanguage]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -69,6 +77,14 @@ const App: React.FC = () => {
       </main>
       <Footer />
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 };
 
