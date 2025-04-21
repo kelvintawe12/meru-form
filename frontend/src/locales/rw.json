@@ -9,7 +9,8 @@
     "closeMenu": "Funga Menu",
     "openMenu": "Fungura Menu",
     "login": "Injira",
-    "logout": "Sohoka"
+    "logout": "Sohoka",
+    "dashboard": "Ikibaho"
   },
   "form": {
     "title": "Ifishi yo Gutumiza",
@@ -191,7 +192,7 @@
     },
     "dispatchStatus": {
       "scheduled": "Byarateganijwe",
-      "inTransit": "Bari mu ngendo",
+      "inTransit": "Bari mu Ngendo",
       "delivered": "Byagezwe",
       "delayed": "Byacitswe"
     },
@@ -295,7 +296,7 @@
   "chart": {
     "title": "Inshamake y’Umubare w’Ibicuruzwa"
   },
-  "profile": {
+  "portal": {
     "lastActive": "Ibyakozwe bwa Nyuma",
     "editProfile": "Hindura Profili",
     "saveChanges": "Bika Impinduka",
@@ -336,7 +337,27 @@
     "nda": "Amasezerano y’Ibitangaza",
     "latestInvoice": "Inyemezabuguzi bwa Vuba",
     "download": "Kuramo",
-    "invoiceHistory": "Amateka y’Inyemezabuguzi"
+    "invoiceHistory": "Amateka y’Inyemezabuguzi",
+    "activeProjects": "Ibikorwa Biracyakorwa",
+    "totalStorage": "Ububiko Bwose",
+    "teamMembers": "Abagize Itsinda",
+    "weeklyHours": "Amasaha y’Icyumweru",
+    "activity1": "Igikorwa cyo gushyiraho Plan yashyizwe",
+    "activity2": "Umwe mu bagize itsinda wongewemo",
+    "activity3": "Iburira ry’ububiko ryashyizwe",
+    "profile": "Umwirondoro",
+    "logout": "Sohoka",
+    "welcomeBack": "Ongera Ukaribu",
+    "lastLogin": "Igena Rya Nyuma",
+    "recentActivities": "Ibikorwa Bya Vuba",
+    "quickActions": "Ibikorwa Byihuse",
+    "uploadFile": "Shyiraho Dosiye",
+    "recentDocuments": "Inyandiko za Vuba",
+    "name": "Izina",
+    "date": "Itariki",
+    "size": "Ingano",
+    "actions": "Ibikorwa",
+    "navigation": "Kuyobora"
   },
   "orderHistory": {
     "orderNumber": "Nomero y’Ibicuruzwa",
@@ -408,6 +429,30 @@
     "contact": "Twandikire",
     "x": "Kudu kurikira kuri X",
     "whatsapp": "Vugana kuri WhatsApp",
-    "privacy": "Politiki y’Ibanga"
+    "privacy": "Politiki y’Ibanga",
+    "companyDesc": "Mount Meru SoyCo itanga ibicuruzwa by’ubuhinzi by’umwimerere mu Rwanda.",
+    "rights": "Uburenganzira Bwose Burabitswe."
+  },
+  "help": {
+    "title": "Ikigo cy’Ubufasha",
+    "subtitle": "Shaka ubufasha ku konti yawe ya Mount Meru SoyCo",
+    "contact": "Vugisha Abafasha",
+    "faq": "Ibibazo Bikunze Kubazwa",
+    "status": "Reba Imiterere y’Ibicuruzwa",
+    "immediateHelp": "Urimo Ushaka Ubufasha Bwa Vuba?",
+    "startChat": "Tangira Ikiganiro cy’Ukuri",
+    "phoneSupport": "Ubufasha bwa Terefone",
+    "supportHours": "Amasaha y’Ubufasha: 8 AM - 6 PM, Kuwa Mbere - Kuwa Gatanu",
+    "visitUs": "Dusure",
+    "liveChat": "Ikiganiro cy’Ukuri",
+    "chatPlaceholder": "Andika ubutumwa bwawe...",
+    "send": "Ohereza",
+    "emailFormTitle": "Twandikire Imeyili",
+    "fullName": "Izina Ryuzuye",
+    "subject": "Ingingo",
+    "subjectPlaceholder": "Andika ingingo y’ikibazo cyawe",
+    "message": "Ubutumwa",
+    "messagePlaceholder": "Sobanura ikibazo cyawe mu buryo bwa hafi",
+    "sendMessage": "Ohereza Ubutumwa"
   }
 }

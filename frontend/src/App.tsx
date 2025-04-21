@@ -10,15 +10,18 @@ import OrderForm from './pages/OrderForm';
 import ClientPortal from './pages/ClientPortal';
 import Help from './pages/Help';
 import Profile from './pages/Profile';
-import { LanguageProvider } from './contexts/LanguageContext'; // Import LanguageProvider
-import i18n from './utils/i18n'; // Import i18n
+import { LanguageProvider } from './contexts/LanguageContext';
 
 // Enhanced ErrorBoundary
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error: Error | null; errorInfo: React.ErrorInfo | null }
 > {
-  state: { hasError: boolean; error: Error | null; errorInfo: React.ErrorInfo | null } = { hasError: false, error: null, errorInfo: null };
+  state = {
+    hasError: false,
+    error: null as Error | null,
+    errorInfo: null as React.ErrorInfo | null,
+  };
 
   static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
@@ -49,7 +52,11 @@ class ErrorBoundary extends React.Component<
 }
 
 const App: React.FC = () => {
-  const { t } = useTranslation('translation');
+  const { t, ready } = useTranslation('translation');
+
+  if (!ready) {
+    return <div className="text-center py-8">Loading translations...</div>;
+  }
 
   return (
     <LanguageProvider>

@@ -1,33 +1,24 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/ClientPortal.tsx
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguage } from '../contexts/LanguageContext'; // Use the correct import
+import { useLanguage } from '../contexts/LanguageContext';
 import {
   LayoutDashboard,
   FileText,
   Menu,
-  CreditCard,
-  Settings,
-  User,
-  Bell,
-  Plus,
   Upload,
-  X,
-  ArrowUp,
   Users,
   Clock,
   File,
   CheckCircle2,
-  LogOut,
-  Lock,
-  Mail,
-  Phone,
-  Globe,
-  Shield,
   AlertCircle,
-  Key,
   Info,
+  Globe,
+  Bell,
+  User,
+  LogOut,
 } from 'lucide-react';
 
 interface UserData {
@@ -42,12 +33,10 @@ interface UserData {
 
 const ClientPortal: React.FC = () => {
   const { t } = useTranslation();
-  const { currentLanguage, changeLanguage } = useLanguage(); // Use currentLanguage
+  const { currentLanguage, changeLanguage } = useLanguage();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('profile');
-  const [isUploadOpen, setUploadOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [userData, setUserData] = useState<UserData>({
+  const [userData] = useState<UserData>({
     name: 'Sarah Johnson',
     email: 'sarah@merusoyco.com',
     phone: '+250 788 123 456',
@@ -87,7 +76,6 @@ const ClientPortal: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -102,21 +90,19 @@ const ClientPortal: React.FC = () => {
                 <span className="text-blue-600">Meru</span>SoyCo
               </h1>
             </div>
-
             <div className="flex items-center gap-4">
               <button
                 onClick={handleLanguageChange}
                 className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+                aria-label={t('nav.toggleLanguage')}
               >
                 <Globe className="h-5 w-5" />
                 <span className="font-medium">{currentLanguage?.toUpperCase() || 'EN'}</span>
               </button>
-
               <button className="p-2 relative text-gray-600 hover:bg-gray-100 rounded-full">
                 <Bell className="h-6 w-6" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-
               <div className="relative group">
                 <img
                   src={userData.avatar}
@@ -147,7 +133,6 @@ const ClientPortal: React.FC = () => {
         </div>
       </header>
 
-      {/* Mobile Sidebar */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.nav
@@ -167,16 +152,13 @@ const ClientPortal: React.FC = () => {
                 <LayoutDashboard className="h-5 w-5 mr-2" />
                 {t('nav.dashboard')}
               </NavLink>
-              {/* Add other mobile nav links */}
             </div>
           </motion.nav>
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
       <main className="pt-16 pb-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Dashboard Header */}
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900">
               {t('portal.welcomeBack')}, {userData.name}
@@ -185,8 +167,6 @@ const ClientPortal: React.FC = () => {
               {t('portal.lastLogin')}: {userData.lastLogin}
             </p>
           </div>
-
-          {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {stats.map((stat, index) => (
               <motion.div
@@ -208,18 +188,12 @@ const ClientPortal: React.FC = () => {
               </motion.div>
             ))}
           </div>
-
-          {/* Main Content Sections */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Recent Activities */}
             <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-lg font-semibold mb-4">{t('portal.recentActivities')}</h3>
               <div className="space-y-4">
                 {activities.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-center p-4 bg-gray-50 rounded-lg"
-                  >
+                  <div key={activity.id} className="flex items-center p-4 bg-gray-50 rounded-lg">
                     <div className="bg-blue-100 p-2 rounded-full mr-4">{activity.icon}</div>
                     <div>
                       <p className="font-medium">{activity.title}</p>
@@ -229,24 +203,18 @@ const ClientPortal: React.FC = () => {
                 ))}
               </div>
             </div>
-
-            {/* Quick Actions */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-lg font-semibold mb-4">{t('portal.quickActions')}</h3>
               <div className="space-y-3">
                 <button
-                  onClick={() => setUploadOpen(true)}
                   className="w-full flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-lg"
                 >
                   <span>{t('portal.uploadFile')}</span>
                   <Upload className="h-5 w-5 text-blue-600" />
                 </button>
-                {/* Add more quick actions */}
               </div>
             </div>
           </div>
-
-          {/* Documents Table */}
           <div className="mt-8 bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="p-6 border-b border-gray-100">
               <h3 className="text-lg font-semibold">{t('portal.recentDocuments')}</h3>
@@ -283,130 +251,8 @@ const ClientPortal: React.FC = () => {
               </table>
             </div>
           </div>
-
-          {/* Profile Section */}
-          {window.location.pathname.includes('/profile') && (
-            <div className="mt-8 bg-white rounded-xl shadow-sm p-8">
-              <div className="flex flex-col md:flex-row gap-8">
-                {/* Profile Sidebar */}
-                <div className="md:w-64 space-y-6">
-                  <div className="text-center">
-                    <img
-                      src={userData.avatar}
-                      alt="Profile"
-                      className="h-32 w-32 rounded-full mx-auto mb-4 shadow-lg"
-                    />
-                    <h2 className="text-xl font-semibold">{userData.name}</h2>
-                    <p className="text-gray-500">{userData.role}</p>
-                  </div>
-
-                  <nav className="space-y-1">
-                    <button
-                      onClick={() => setActiveTab('profile')}
-                      className={`w-full text-left px-4 py-2 rounded-lg ${
-                        activeTab === 'profile' ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
-                      }`}
-                    >
-                      {t('portal.personalInfo')}
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('security')}
-                      className={`w-full text-left px-4 py-2 rounded-lg ${
-                        activeTab === 'security' ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
-                      }`}
-                    >
-                      {t('portal.security')}
-                    </button>
-                  </nav>
-                </div>
-
-                {/* Profile Content */}
-                <div className="flex-1">
-                  {activeTab === 'profile' && (
-                    <div className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium mb-2">
-                            {t('portal.fullName')}
-                          </label>
-                          <input
-                            value={userData.name}
-                            className="w-full px-4 py-2 border rounded-lg"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">
-                            {t('portal.email')}
-                          </label>
-                          <input
-                            value={userData.email}
-                            className="w-full px-4 py-2 border rounded-lg"
-                            disabled
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">
-                            {t('portal.phone')}
-                          </label>
-                          <input
-                            value={userData.phone}
-                            className="w-full px-4 py-2 border rounded-lg"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">
-                            {t('portal.location')}
-                          </label>
-                          <input
-                            value={userData.location}
-                            className="w-full px-4 py-2 border rounded-lg"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeTab === 'security' && (
-                    <div className="space-y-6">
-                      <div className="bg-blue-50 p-4 rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-medium">{t('portal.twoFactorAuth')}</h4>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {t('portal.twoFactorDesc')}
-                            </p>
-                          </div>
-                          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            {t('portal.enable')}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="bg-white border rounded-lg p-4">
-                        <h4 className="font-medium mb-2">{t('portal.password')}</h4>
-                        <button className="text-blue-600 hover:text-blue-700">
-                          {t('portal.changePassword')}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </main>
-
-      {/* Upload Modal */}
-      <AnimatePresence>
-        {isUploadOpen && (
-          <div>
-            {/* Modal implementation */}
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 mt-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -414,7 +260,6 @@ const ClientPortal: React.FC = () => {
               <h3 className="text-white font-semibold mb-4">Meru SoyCo</h3>
               <p className="text-sm">{t('footer.companyDesc')}</p>
             </div>
-            {/* Footer columns */}
           </div>
           <div className="border-t border-gray-800 mt-8 pt-6 text-center text-sm">
             <p>© {new Date().getFullYear()} Meru SoyCo. {t('footer.rights')}</p>

@@ -9,7 +9,8 @@
     "closeMenu": "Close Menu",
     "openMenu": "Open Menu",
     "login": "Login",
-    "logout": "Logout"
+    "logout": "Logout",
+    "dashboard": "Dashboard"
   },
   "form": {
     "title": "Order Form",
@@ -294,7 +295,7 @@
   "chart": {
     "title": "Product Quantity Summary"
   },
-  "profile": {
+  "portal": {
     "lastActive": "Last Active",
     "editProfile": "Edit Profile",
     "saveChanges": "Save Changes",
@@ -335,7 +336,27 @@
     "nda": "Non-Disclosure Agreement",
     "latestInvoice": "Latest Invoice",
     "download": "Download",
-    "invoiceHistory": "Invoice History"
+    "invoiceHistory": "Invoice History",
+    "activeProjects": "Active Projects",
+    "totalStorage": "Total Storage",
+    "teamMembers": "Team Members",
+    "weeklyHours": "Weekly Hours",
+    "activity1": "Project Plan uploaded",
+    "activity2": "New team member added",
+    "activity3": "Storage limit warning issued",
+    "profile": "Profile",
+    "logout": "Logout",
+    "welcomeBack": "Welcome Back",
+    "lastLogin": "Last Login",
+    "recentActivities": "Recent Activities",
+    "quickActions": "Quick Actions",
+    "uploadFile": "Upload File",
+    "recentDocuments": "Recent Documents",
+    "name": "Name",
+    "date": "Date",
+    "size": "Size",
+    "actions": "Actions",
+    "navigation": "Navigation"
   },
   "orderHistory": {
     "orderNumber": "Order Number",
@@ -407,6 +428,30 @@
     "contact": "Contact Us",
     "x": "Follow us on X",
     "whatsapp": "Chat on WhatsApp",
-    "privacy": "Privacy Policy"
+    "privacy": "Privacy Policy",
+    "companyDesc": "Mount Meru SoyCo provides premium agricultural products in Rwanda.",
+    "rights": "All Rights Reserved."
+  },
+  "help": {
+    "title": "Help Center",
+    "subtitle": "Get assistance with your Mount Meru SoyCo account",
+    "contact": "Contact Support",
+    "faq": "Frequently Asked Questions",
+    "status": "Check Order Status",
+    "immediateHelp": "Need Immediate Help?",
+    "startChat": "Start Live Chat",
+    "phoneSupport": "Phone Support",
+    "supportHours": "Support Hours: 8 AM - 6 PM, Mon-Fri",
+    "visitUs": "Visit Us",
+    "liveChat": "Live Chat",
+    "chatPlaceholder": "Type your message...",
+    "send": "Send",
+    "emailFormTitle": "Send us an Email",
+    "fullName": "Full Name",
+    "subject": "Subject",
+    "subjectPlaceholder": "Enter the subject of your issue",
+    "message": "Message",
+    "messagePlaceholder": "Describe your issue in detail",
+    "sendMessage": "Send Message"
   }
 }
