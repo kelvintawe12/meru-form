@@ -1,26 +1,29 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import i18n from '../utils/i18n';
+// src/contexts/LanguageContext.tsx
+import React, { createContext, useContext, useState, useMemo } from 'react';
 
 interface LanguageContextType {
-  language: 'en' | 'rw';
-  setLanguage: (lang: 'en' | 'rw') => void;
+  language: string;
+  setLanguage: (lang: string) => void;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<'en' | 'rw'>('en');
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [language, setLanguage] = useState('en');
 
-  const handleSetLanguage = (lang: 'en' | 'rw') => {
-    setLanguage(lang);
-    i18n.changeLanguage(lang);
-  };
-
-  return (
-    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage }}>
-      {children}
-    </LanguageContext.Provider>
+  const value = useMemo(
+    () => ({
+      language,
+      setLanguage: (lang: string) => {
+        setLanguage(lang);
+        // Update i18next language
+        import('i18next').then((i18n) => i18n.default.changeLanguage(lang));
+      },
+    }),
+    [language]
   );
+
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 };
 
 export const useLanguage = () => {

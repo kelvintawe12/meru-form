@@ -1,52 +1,27 @@
-import React from 'react';
-import { useFormContext } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import React, { forwardRef } from 'react';
 
-interface SelectProps {
-  name: string;
-  label: string;
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  label?: string;
   options: string[];
-  disabled?: boolean;
-  placeholder?: string;
 }
 
-const Select: React.FC<SelectProps> = ({ name, label, options, disabled, placeholder }) => {
-  const { t } = useTranslation();
-  const { register, formState: { errors } } = useFormContext();
-  const error = typeof errors[name]?.message === 'string' ? errors[name]?.message : undefined;
-
+const Select = forwardRef<HTMLSelectElement, SelectProps>(({ label, options, ...props }, ref) => {
   return (
-    <div className="mb-4">
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
-        {t(label)} {error && <span className="text-red-600">*</span>}
-      </label>
+    <div className="flex flex-col">
+      {label && <label className="mb-1 text-sm font-medium">{label}</label>}
       <select
-        id={name}
-        {...register(name)}
-        disabled={disabled}
-        className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 ${
-          error ? 'border-red-600' : 'border-gray-300'
-        }`}
-        aria-describedby={error ? `${name}-error` : undefined}
+        ref={ref}
+        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        {...props}
       >
-        {placeholder && (
-          <option value="" disabled hidden>
-            {t(placeholder)}
-          </option>
-        )}
         {options.map((option) => (
           <option key={option} value={option}>
-            {t(`options.${option}`)}
+            {option}
           </option>
         ))}
       </select>
-      {error && (
-        <p id={`${name}-error`} className="mt-1 text-sm text-red-600">
-          {t(error)}
-        </p>
-      )}
     </div>
   );
-};
+});
 
 export default Select;

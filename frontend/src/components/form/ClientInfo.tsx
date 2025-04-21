@@ -1,3 +1,4 @@
+// src/components/form/ClientInfo.tsx
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +10,6 @@ import Checkbox from '../common/Checkbox';
 import FileInput from '../common/FileInput';
 import { FormData } from '../../types/form';
 
-// Mock formatCustomerId (replace with actual implementation)
 const formatCustomerId = (fullName: string, phoneNumber: string, date: Date): string => {
   if (!fullName || !phoneNumber) return '';
   const initials = fullName
@@ -21,95 +21,160 @@ const formatCustomerId = (fullName: string, phoneNumber: string, date: Date): st
 };
 
 const ClientInfo: React.FC = () => {
-  const { t } = useTranslation();
-  const { watch } = useFormContext<FormData>();
+  const { t } = useTranslation('translation');
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext<FormData>();
+
   const fullName = watch('clientInfo.fullName') || '';
   const phoneNumber = watch('clientInfo.phoneNumber') || '';
-  const customerId = formatCustomerId(fullName, String(phoneNumber), new Date());
+  const customerId = formatCustomerId(fullName, phoneNumber, new Date());
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Input
-        name="clientInfo.fullName"
-        label="form.fullName"
-        placeholder="form.fullNamePlaceholder"
-
-      />
-      <Input
-        name="clientInfo.phoneNumber"
-        label="form.phoneNumber"
-        placeholder="form.phoneNumberPlaceholder"
-        type="tel"
-
-      />
-      <Input
-        name="clientInfo.email"
-        label="form.email"
-        placeholder="form.emailPlaceholder"
-        type="email"
-      />
-      <Select
-        name="clientInfo.gender"
-        label="form.gender"
-        options={['Male', 'Female', 'Other', 'Prefer not to say']}
-      />
-      <Textarea
-        name="clientInfo.address"
-        label="form.address"
-        placeholder="form.addressPlaceholder"
-      />
-      <Select
-        name="clientInfo.clientCategory"
-        label="form.clientCategory"
-        options={['Farmer', 'Distributor', 'Retailer', 'Partner', 'Individual Buyer']}
-      />
-      <Input
-        name="clientInfo.dateOfRegistration"
-        label="form.dateOfRegistration"
-        type="text"
-        disabled
-        style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}
-      />
-      <Input
-        name="clientInfo.referredBy"
-        label="form.referredBy"
-        placeholder="form.referredByPlaceholder"
-      />
-      <RadioGroup
-        name="clientInfo.preferredContactMethod"
-        label="form.preferredContactMethod"
-        options={['SMS', 'Call', 'Email']}
-      />
-      <Input
-        name="clientInfo.businessName"
-        label="form.businessName"
-        placeholder="form.businessNamePlaceholder"
-      />
-      <Input
-        name="clientInfo.taxId"
-        label="form.taxId"
-        placeholder="form.taxIdPlaceholder"
-      />
-      <Checkbox
-        name="clientInfo.loyaltyProgram"
-        label="form.loyaltyProgram"
-        tooltip="form.loyaltyProgramTooltip"
-      />
-      <Select
-        name="clientInfo.clientTier"
-        label="form.clientTier"
-        options={['Standard', 'Premium', 'Enterprise']}
-      />
-      <Input
-        name="clientInfo.accountManager"
-        label="form.accountManager"
-        placeholder="form.accountManagerPlaceholder"
-      />
-      <FileInput
-        name="clientInfo.clientPhoto"
-        label="form.clientPhoto"
-        accept="image/jpeg,image/png"
-      />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 no-flicker">
+      <div>
+        <Input
+          name="clientInfo.fullName"
+          label={t('form.fullName')}
+          placeholder={t('form.fullNamePlaceholder')}
+          register={register}
+          required
+          error={errors.clientInfo?.fullName?.message}
+        />
+      </div>
+      <div>
+        <Input
+          name="clientInfo.phoneNumber"
+          label={t('form.phoneNumber')}
+          placeholder={t('form.phoneNumberPlaceholder')}
+          type="tel"
+          register={register}
+          required
+          error={errors.clientInfo?.phoneNumber?.message}
+        />
+      </div>
+      <div>
+        <Input
+          name="clientInfo.email"
+          label={t('form.email')}
+          placeholder={t('form.emailPlaceholder')}
+          type="email"
+          register={register}
+          error={errors.clientInfo?.email?.message}
+        />
+      </div>
+      <div>
+        <Select
+          name="clientInfo.gender"
+          label={t('form.gender')}
+          options={['Male', 'Female', 'Other', 'Prefer not to say']}
+          register={register}
+          error={errors.clientInfo?.gender?.message}
+        />
+      </div>
+      <div>
+        <Textarea
+          name="clientInfo.address"
+          label={t('form.address')}
+          placeholder={t('form.addressPlaceholder')}
+          register={register}
+          error={errors.clientInfo?.address?.message}
+        />
+      </div>
+      <div>
+        <Select
+          name="clientInfo.clientCategory"
+          label={t('form.clientCategory')}
+          options={['Farmer', 'Distributor', 'Retailer', 'Partner', 'Individual Buyer']}
+          register={register}
+          required
+          error={errors.clientInfo?.clientCategory?.message}
+        />
+      </div>
+      <div>
+        <Input
+          name="clientInfo.dateOfRegistration"
+          label={t('form.dateOfRegistration')}
+          type="text"
+          disabled
+          register={register}
+          className="bg-gray-100 cursor-not-allowed"
+        />
+      </div>
+      <div>
+        <Input
+          name="clientInfo.referredBy"
+          label={t('form.referredBy')}
+          placeholder={t('form.referredByPlaceholder')}
+          register={register}
+          error={errors.clientInfo?.referredBy?.message}
+        />
+      </div>
+      <div>
+        <RadioGroup
+          name="clientInfo.preferredContactMethod"
+          label={t('form.preferredContactMethod')}
+          options={['SMS', 'Call', 'Email']}
+          register={register}
+          error={errors.clientInfo?.preferredContactMethod?.message}
+        />
+      </div>
+      <div>
+        <Input
+          name="clientInfo.businessName"
+          label={t('form.businessName')}
+          placeholder={t('form.businessNamePlaceholder')}
+          register={register}
+          error={errors.clientInfo?.businessName?.message}
+        />
+      </div>
+      <div>
+        <Input
+          name="clientInfo.taxId"
+          label={t('form.taxId')}
+          placeholder={t('form.taxIdPlaceholder')}
+          register={register}
+          error={errors.clientInfo?.taxId?.message}
+        />
+      </div>
+      <div>
+        <Checkbox
+          name="clientInfo.loyaltyProgram"
+          label={t('form.loyaltyProgram')}
+          tooltip={t('form.loyaltyProgramTooltip')}
+          register={register}
+          error={errors.clientInfo?.loyaltyProgram?.message}
+        />
+      </div>
+      <div>
+        <Select
+          name="clientInfo.clientTier"
+          label={t('form.clientTier')}
+          options={['Standard', 'Premium', 'Enterprise']}
+          register={register}
+          error={errors.clientInfo?.clientTier?.message}
+        />
+      </div>
+      <div>
+        <Input
+          name="clientInfo.accountManager"
+          label={t('form.accountManager')}
+          placeholder={t('form.accountManagerPlaceholder')}
+          register={register}
+          error={errors.clientInfo?.accountManager?.message}
+        />
+      </div>
+      <div>
+        <FileInput
+          name="clientInfo.clientPhoto"
+          label={t('form.clientPhoto')}
+          accept="image/jpeg,image/png"
+          register={register}
+          error={errors.clientInfo?.clientPhoto?.message}
+        />
+      </div>
       <div>
         <label className="block text-sm font-medium text-gray-700">
           {t('form.customerId')}

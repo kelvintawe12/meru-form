@@ -5,23 +5,9 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { FormData } from '../types/form';
 
-// Assets (use placeholders; replace with actual paths)
 const logo = '/logo.png';
 const watermark = '/watermark.png';
 const defaultSignature = '/default-sig.png';
-
-// Mock API utility
-const mockApiCall = <T>(data: T, delay: number = 1000, shouldFail: boolean = false): Promise<T> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (shouldFail) {
-        reject(new Error('Mock API: Failed to upload document'));
-      } else {
-        resolve(data);
-      }
-    }, delay);
-  });
-};
 
 export interface PDFGeneratorResult {
   blob: Blob;
@@ -43,11 +29,12 @@ export const usePDFGenerator = () => {
 
   const calculateFinancialSummary = (orderDetails: FormData['orderDetails']) => {
     const totalAmount = orderDetails.reduce(
-      (sum, order) => sum + order.quantity * order.unitPrice,
+      (sum, order) => sum + (order.quantity ?? 0) * (order.unitPrice ?? 0),
       0
     );
     const totalDiscount = orderDetails.reduce(
-      (sum, order) => sum + (order.quantity * order.unitPrice * (order.discount || 0)) / 100,
+      (sum, order) =>
+        sum + ((order.quantity ?? 0) * (order.unitPrice ?? 0) * (order.discount || 0)) / 100,
       0
     );
     const netAmount = totalAmount - totalDiscount;
@@ -64,7 +51,7 @@ export const usePDFGenerator = () => {
   };
 
   const generatePDF = useCallback(
-    async (formData: FormData, fileName: string = 'meru_order_summary.pdf'): Promise<PDFGeneratorResult | null> => {
+    async (formData: FormData, fileName: string = 'meru_order_summary.pdf') => {
       try {
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -72,6 +59,7 @@ export const usePDFGenerator = () => {
         const adminID = generateAdminID();
         let currentY = 0;
 
+        // Watermark
         try {
           doc.addImage(watermark, 'PNG', 50, 50, pageWidth - 100, 100, '', 'FAST');
           doc.setGState(new jsPDF.GState({ opacity: 0.1 }));
@@ -80,6 +68,7 @@ export const usePDFGenerator = () => {
           console.warn('Watermark not found');
         }
 
+        // Header
         doc.setDrawColor(0, 105, 92);
         doc.setFillColor(245, 245, 245);
         doc.rect(0, 0, pageWidth, 50, 'F');
@@ -97,11 +86,13 @@ export const usePDFGenerator = () => {
         doc.text(`ADMIN ID: ${adminID}`, pageWidth - 80, 20);
         doc.text(`DATE: ${new Date().toLocaleDateString('en-RW')}`, pageWidth - 80, 28);
 
+        // Title
         doc.setFontSize(18);
         doc.setTextColor(0, 105, 92);
         doc.setFont('helvetica', 'bold');
         doc.text(t('form.title'), pageWidth / 2, 40, { align: 'center' });
 
+        // Client Info Table
         autoTable(doc, {
           startY: 60,
           head: [[{ content: t('form.clientInfo'), styles: { fillColor: [44, 62, 80], textColor: 255, fontSize: 14 } }]],
@@ -123,6 +114,7 @@ export const usePDFGenerator = () => {
           margin: { horizontal: 15 },
         });
 
+        // Financial Summary
         const financialSummary = calculateFinancialSummary(formData.orderDetails);
         currentY = (doc as any).lastAutoTable.finalY + 15;
         doc.setFontSize(14);
@@ -143,6 +135,7 @@ export const usePDFGenerator = () => {
           margin: { horizontal: 15 },
         });
 
+        // Order Details Table
         currentY = (doc as any).lastAutoTable.finalY + 15;
         doc.setFontSize(14);
         doc.text(t('form.orderDetails'), 15, currentY);
@@ -161,11 +154,14 @@ export const usePDFGenerator = () => {
           ],
           body: formData.orderDetails.map((order, index) => [
             index + 1,
-            t(`options.${order.productName}`),
-            order.sku,
-            order.quantity,
+            t(`options.${order.productName}`) || '-',
+            order.sku || '-',
+            order.quantity || 0,
             (order.unitPrice ?? 0).toLocaleString('en-RW', { style: 'currency', currency: 'RWF' }),
-            (order.quantity * order.unitPrice).toLocaleString('en-RW', { style: 'currency', currency: 'RWF' }),
+            ((order.quantity ?? 0) * (order.unitPrice ?? 0)).toLocaleString('en-RW', {
+              style: 'currency',
+              currency: 'RWF',
+            }),
           ]),
           styles: { cellPadding: 3, fontSize: 10, font: 'helvetica' },
           theme: 'grid',
@@ -173,6 +169,7 @@ export const usePDFGenerator = () => {
           margin: { horizontal: 15 },
         });
 
+        // Admin Section
         currentY = (doc as any).lastAutoTable.finalY + 20;
         doc.setFillColor(44, 62, 80);
         doc.rect(0, currentY, pageWidth, 15, 'F');
@@ -202,6 +199,7 @@ export const usePDFGenerator = () => {
           margin: { horizontal: 15 },
         });
 
+        // Signature Section
         currentY = (doc as any).lastAutoTable.finalY + 20;
         doc.setFontSize(10);
         doc.setTextColor(100);
@@ -214,17 +212,14 @@ export const usePDFGenerator = () => {
           console.warn('Signature image not found');
         }
 
+        // Footer
         doc.setFontSize(8);
         doc.setTextColor(100);
-        const footerText = `CONFIDENTIAL - ${adminID} - Mount Meru SoyCo Rwanda | ${new Date().toLocaleDateString('en-RW')} | Page ${doc.internal.getNumberOfPages()}`;
+        const footerText = `CONFIDENTIAL - ${adminID} - Mount Meru SoyCo Rwanda | ${new Date().toLocaleDateString('en-RW')} | Page ${doc.getNumberOfPages()}`;
         doc.text(footerText, 15, pageHeight - 10);
 
         const pdfBlob = doc.output('blob');
         const pdfUrl = URL.createObjectURL(pdfBlob);
-
-        // Mock API call to upload PDF
-        await mockApiCall({ adminID, fileName, blob: pdfBlob }, 1200, Math.random() < 0.05);
-
         doc.save(fileName);
         toast.success(t('form.pdfGenerated'));
         return { blob: pdfBlob, url: pdfUrl, adminID };
@@ -238,7 +233,7 @@ export const usePDFGenerator = () => {
   );
 
   const generateReceiptPDF = useCallback(
-    async (formData: FormData, fileName: string = 'meru_receipt.pdf'): Promise<PDFGeneratorResult | null> => {
+    async (formData: FormData, fileName: string = 'meru_receipt.pdf') => {
       try {
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -246,6 +241,7 @@ export const usePDFGenerator = () => {
         const adminID = generateAdminID();
         let currentY = 0;
 
+        // Header
         doc.setDrawColor(0, 105, 92);
         doc.setFillColor(245, 245, 245);
         doc.rect(0, 0, pageWidth, 50, 'F');
@@ -263,11 +259,13 @@ export const usePDFGenerator = () => {
         doc.text(`RECEIPT ID: ${adminID}`, pageWidth - 80, 20);
         doc.text(`DATE: ${new Date().toLocaleDateString('en-RW')}`, pageWidth - 80, 28);
 
+        // Title
         doc.setFontSize(18);
         doc.setTextColor(0, 105, 92);
         doc.setFont('helvetica', 'bold');
         doc.text(t('form.receiptTitle'), pageWidth / 2, 40, { align: 'center' });
 
+        // Client Info
         autoTable(doc, {
           startY: 60,
           head: [[{ content: t('form.clientInfo'), styles: { fillColor: [44, 62, 80], textColor: 255, fontSize: 14 } }]],
@@ -281,6 +279,7 @@ export const usePDFGenerator = () => {
           margin: { horizontal: 15 },
         });
 
+        // Payment Details
         currentY = (doc as any).lastAutoTable.finalY + 15;
         doc.setFontSize(14);
         doc.setTextColor(0, 105, 92);
@@ -291,7 +290,7 @@ export const usePDFGenerator = () => {
           body: [
             [t('form.paymentStatus'), t(`options.${formData.salesOps.paymentStatus}`)],
             [t('form.paymentMethod'), formData.salesOps.paymentMethod || '-'],
-            [t('form.paymentReceived'), formData.salesOps.paymentReceived.toLocaleString('en-RW', { style: 'currency', currency: 'RWF' })],
+            [t('form.paymentReceived'), (formData.salesOps.paymentReceived ?? 0).toLocaleString('en-RW', { style: 'currency', currency: 'RWF' })],
             [t('form.invoiceNumber'), formData.salesOps.invoiceNumber || '-'],
           ],
           styles: { cellPadding: 3, fontSize: 12, font: 'helvetica' },
@@ -299,6 +298,7 @@ export const usePDFGenerator = () => {
           margin: { horizontal: 15 },
         });
 
+        // Footer
         doc.setFontSize(8);
         doc.setTextColor(100);
         const footerText = `Mount Meru SoyCo Rwanda | ${new Date().toLocaleDateString('en-RW')} | Receipt ${adminID}`;
@@ -306,10 +306,6 @@ export const usePDFGenerator = () => {
 
         const pdfBlob = doc.output('blob');
         const pdfUrl = URL.createObjectURL(pdfBlob);
-
-        // Mock API call to upload receipt
-        await mockApiCall({ adminID, fileName, blob: pdfBlob }, 1200, Math.random() < 0.05);
-
         doc.save(fileName);
         toast.success(t('form.receiptGenerated'));
         return { blob: pdfBlob, url: pdfUrl, adminID };
@@ -328,8 +324,6 @@ export const usePDFGenerator = () => {
         const message = encodeURIComponent(
           `Mount Meru SoyCo Document\nID: ${pdfResult.adminID}\nDownload: ${pdfResult.url}`
         );
-        // Mock API call to log sharing action
-        await mockApiCall({ adminID: pdfResult.adminID, phoneNumber }, 800, Math.random() < 0.05);
         window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
         toast.success(t('form.whatsappShared'));
       } catch (error) {
