@@ -1,50 +1,70 @@
-/* Import Google Fonts */
+/* index.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Root variables */
+/* Viewport Meta (Include in HTML) */
+/*
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+*/
+
+/* Root Variables */
 :root {
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
   --secondary: #f59e0b;
-  --glass: rgba(255, 255, 255, 0.9);
+  --glass: rgba(255, 255, 255, 0.95);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --spacing-xs: clamp(0.5rem, 2vw, 0.75rem);
+  --spacing-sm: clamp(1rem, 3vw, 1.5rem);
+  --spacing-md: clamp(1.5rem, 4vw, 2rem);
 }
 
-/* Base styles */
+/* Base Styles */
+html {
+  @apply text-[14px] sm:text-[15px] lg:text-[16px];
+  scroll-behavior: smooth;
+}
+
 body {
-  @apply font-sans;
+  @apply font-sans bg-white text-gray-800 overflow-x-hidden;
   font-family: 'Inter', system-ui, sans-serif;
-  overflow-x: hidden; /* Added to prevent horizontal scrolling */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Floating Button */
-.floating-btn {
-  @apply fixed bottom-8 right-8 z-50 p-4 rounded-full;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-  box-shadow: var(--shadow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Container */
+.container {
+  @apply w-full mx-auto px-4 sm:px-6 lg:px-8;
+  max-width: 1440px;
 }
 
-.floating-btn:hover {
-  transform: scale(1.05) rotate(5deg);
-  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.15);
+/* Responsive Grid Layout */
+.grid-responsive {
+  @apply grid gap-6;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
 }
 
-/* Popup Content */
-.popup-content {
-  @apply rounded-2xl border border-white/20;
-  background: var(--glass);
-  backdrop-filter: blur(12px);
-  box-shadow: var(--shadow);
+/* Image Responsiveness */
+.aspect-box {
+  @apply relative w-full;
+  padding-top: 100%;
 }
 
-/* List Items */
+.responsive-image {
+  @apply absolute top-0 left-0 w-full h-full object-cover;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Navigation */
+.mobile-menu {
+  @apply lg:hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm;
+  animation: fadeIn 0.3s ease-out;
+}
+
 .nav-item {
-  @apply rounded-xl transition-all duration-200;
+  @apply p-3 sm:p-4 rounded-xl transition-all duration-200;
 }
 
 .nav-item:hover {
@@ -52,34 +72,67 @@ body {
   transform: translateX(4px);
 }
 
-/* Status Badges */
-.status-badge {
-  @apply text-xs font-medium px-2.5 py-1 rounded-full;
+/* Typography */
+h1 {
+  @apply font-bold leading-tight;
+  font-size: clamp(2rem, 6vw, 3.5rem);
 }
 
-.status-delivered {
-  background: rgba(34, 197, 94, 0.15);
-  color: #16a34a;
+h2 {
+  @apply font-semibold;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
 }
 
-.status-transit {
-  background: rgba(245, 158, 11, 0.15);
-  color: #d97706;
+p {
+  @apply leading-relaxed;
+  font-size: clamp(1rem, 2vw, 1.125rem);
 }
 
-/* Product Card */
+/* Buttons */
+.floating-btn {
+  @apply fixed bottom-8 right-8 z-50 rounded-full flex items-center justify-center;
+  width: clamp(56px, 12vw, 64px);
+  height: clamp(56px, 12vw, 64px);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  box-shadow: var(--shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cards */
 .product-card {
-  @apply rounded-xl overflow-hidden;
-  background: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(243, 244, 246, 0.95) 100%);
+  @apply rounded-xl overflow-hidden bg-white;
   box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
 }
 
-.product-image {
-  @apply w-full h-40 object-cover transition-transform duration-300;
+.product-card:hover {
+  transform: translateY(-4px);
 }
 
-.product-image:hover {
-  transform: scale(1.05);
+/* Responsive Spacing */
+.fluid-section {
+  @apply py-[var(--spacing-md)];
+}
+
+.fluid-padding {
+  @apply px-[var(--spacing-xs)] py-[var(--spacing-sm)];
+}
+
+/* Media Queries */
+@media (max-width: 640px) {
+  .hide-on-mobile {
+    @apply hidden;
+  }
+}
+
+@media (hover: none) {
+  .product-card:hover {
+    transform: none;
+  }
+  
+  .floating-btn:hover {
+    transform: scale(1) !important;
+  }
 }
 
 /* Animations */
@@ -93,18 +146,22 @@ body {
   to { transform: translateY(0); }
 }
 
-.popup-enter {
-  animation: fadeIn 0.3s ease-out, slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  animation-fill-mode: backwards;
+/* Utilities */
+.focus-ring {
+  @apply outline-none focus-visible:ring-2 focus-visible:ring-primary/50;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  @apply hidden;
 }
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 6px;
+  @apply w-2 h-2;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
+  @apply bg-gray-100;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -113,4 +170,15 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400;
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    @apply hidden;
+  }
+  
+  body {
+    @apply text-black bg-white;
+  }
 }
